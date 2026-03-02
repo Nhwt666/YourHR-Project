@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Test AI Phỏng vấn</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 0 auto; padding: 1rem; background: #1a1a2e; color: #eee; }
+    h1 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+    .step { margin-bottom: 1.5rem; padding: 1rem; background: #16213e; border-radius: 8px; }
+    label { display: block; margin-bottom: 0.25rem; color: #aaa; font-size: 0.9rem; }
+    input, textarea, button { width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; border-radius: 4px; border: 1px solid #333; background: #0f0f1a; color: #eee; }
+    button { cursor: pointer; font-weight: 600; border: none; background: #e94560; color: #fff; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button.record { background: #0f3460; }
+    button.record.recording { background: #c1121f; animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { opacity: 0.8; } }
+    .log { font-size: 0.85rem; white-space: pre-wrap; background: #0f0f1a; padding: 0.75rem; border-radius: 4px; margin-top: 0.5rem; max-height: 200px; overflow-y: auto; }
+    .error { color: #f66; }
+    .success { color: #6f6; }
+    .q { margin: 0.75rem 0; padding: 0.75rem; background: #0f0f1a; border-radius: 6px; border-left: 4px solid #e94560; }
+    .q-desc { margin: 0.5rem 0 1rem 0; padding: 0.6rem; font-size: 0.9rem; color: #aaa; background: #0f0f1a; border-radius: 4px; }
+    .btn-hear { background: #0f3460; margin-bottom: 0.5rem; }
+    .btn-role { flex:1; padding: 0.5rem; background: #0f0f1a; border: 2px solid #333; color: #aaa; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    .btn-role.active { border-color: #e94560; color: #fff; background: #1a1a2e; }
+    .score { font-size: 1.1rem; font-weight: 700; color: #6f6; }
+  </style>
+</head>
+<body>
+  <h1>🎤 Test AI Phỏng vấn</h1>
+  <p style="color:#888;font-size:0.9rem;">Kiểm tra: AI có hỏi câu hỏi không, bạn nói vào micro → AI nghe, phân tích và trả lời.</p>
+
+  <div class="step">
+    <label>1. API Base URL (backend đang chạy)</label>
+    <input type="text" id="baseUrl" value="https://localhost:7196" placeholder="https://localhost:7196" />
+    <p style="color:#aaa;font-size:0.8rem;margin:0 0 0.5rem 0;">⚠️ Mở trang này cùng origin với backend: <strong>https://localhost:7196/test-interview.html</strong> (tránh lỗi fetch). Nếu chạy HTTP thì dùng http://localhost:5298.</p>
+    <label>2. JWT Token (Swagger: Login → copy giá trị "token" trong response, chỉ dán chuỗi eyJ...)</label>
+    <input type="password" id="token" placeholder="Dán token (eyJ...) vào đây" />
+    <label>3. Chọn loại phỏng vấn</label>
+    <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
+      <button type="button" id="btnRoleFE" class="btn-role">📱 Phỏng vấn Frontend (FE)</button>
+      <button type="button" id="btnRoleBE" class="btn-role active">⚙️ Phỏng vấn Backend (BE)</button>
+    </div>
+    <input type="hidden" id="jobRole" value="Lập trình viên Backend" />
+    <button type="button" id="btnMicAllow" class="btn-hear" style="margin-bottom:0.5rem;">🎤 Bật micro (bấm trước, chọn Allow khi trình duyệt hỏi)</button>
+    <p id="micStatus" style="font-size:0.8rem;color:#888;margin:0 0 0.5rem 0;"></p>
+    <button type="button" id="btnStart">🚀 Bắt đầu phỏng vấn (AI sinh câu hỏi)</button>
+    <div id="startLog" class="log"></div>
+    <p class="mic-help" style="font-size:0.8rem;color:#aaa;margin-top:0.75rem;padding:0.5rem;background:#0f0f1a;border-radius:4px;">Nếu <strong>không bấm được Allow</strong>: (1) Refresh trang (F5), bấm "Bật micro" lại. (2) Hoặc Chrome → Cài đặt → Quyền riêng tư và bảo mật → Cài đặt trang web → Micro → thêm localhost vào Cho phép.</p>
+  </div>
+
+  <div class="step" id="stepQuestions" style="display:none;">
+    <strong>📋 Câu hỏi AI đã sinh:</strong>
+    <div id="questionsList"></div>
+    <p style="color:#888;font-size:0.85rem;">Cuộc trò chuyện liên tục: AI đọc câu hỏi → bạn nói → khi bạn dừng vài giây, tự động gửi chấm → câu tiếp theo.</p>
+  </div>
+
+  <div class="step" id="stepAnswer" style="display:none;">
+    <p id="statusLine" style="margin:0 0 0.5rem 0;color:#6f6;font-size:0.85rem;">🔊 Đang đọc câu hỏi...</p>
+    <strong id="currentQuestionText"></strong>
+    <p id="currentQuestionDesc" class="q-desc"></p>
+    <button type="button" id="btnHearQuestion" class="btn-hear">🔊 Nghe lại câu hỏi</button>
+    <div id="transcriptLog" class="log" style="min-height:60px;">Đang nghe... Nói câu trả lời. Sẽ tự gửi sau vài giây im lặng.</div>
+    <button type="button" id="btnSubmitEarly" class="btn-hear" style="margin-top:0.5rem;">✓ Gửi câu trả lời ngay (không cần chờ)</button>
+    <div id="evaluateLog" class="log"></div>
+  </div>
+
+  <script>
+    (function () {
+      const baseUrl = () => document.getElementById('baseUrl').value.replace(/\/$/, '');
+      // Chỉ lấy chuỗi token (bỏ "Bearer " nếu user dán cả Bearer)
+      const token = () => {
+        const raw = document.getElementById('token').value.trim();
+        return raw.replace(/^Bearer\s+/i, '');
+      };
+      const log = (elId, text, isError) => {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        el.textContent = (el.textContent ? el.textContent + '\n' : '') + text;
+        el.className = 'log ' + (isError ? 'error' : '');
+        el.scrollTop = el.scrollHeight;
+      };
+      const clearLog = (elId) => { const el = document.getElementById(elId); if (el) el.textContent = ''; };
+
+      let sessionId = null;
+      let questions = [];
+      let currentQuestionIndex = 0;
+      let currentTranscript = '';
+      let recognition = null;
+      let silenceTimeoutId = null;
+      let isSubmitting = false;
+      let isListening = false;
+      const SILENCE_MS = 2500;
+
+      // Role selector: FE / BE
+      document.getElementById('btnRoleFE').addEventListener('click', function() {
+        document.getElementById('jobRole').value = 'Lập trình viên Frontend';
+        document.getElementById('btnRoleFE').classList.add('active');
+        document.getElementById('btnRoleBE').classList.remove('active');
+      });
+      document.getElementById('btnRoleBE').addEventListener('click', function() {
+        document.getElementById('jobRole').value = 'Lập trình viên Backend';
+        document.getElementById('btnRoleBE').classList.add('active');
+        document.getElementById('btnRoleFE').classList.remove('active');
+      });
+
+      // Request mic permission on user click (so dialog has valid user gesture)
+      document.getElementById('btnMicAllow').addEventListener('click', function() {
+        var status = document.getElementById('micStatus');
+        status.textContent = 'Đang yêu cầu micro...';
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          status.textContent = 'Trình duyệt không hỗ trợ hoặc không phải HTTPS/localhost.';
+          return;
+        }
+        navigator.mediaDevices.getUserMedia({ audio: true })
+          .then(function(stream) {
+            stream.getTracks().forEach(function(t) { t.stop(); });
+            status.textContent = '✅ Đã cho phép micro. Bạn có thể bắt đầu phỏng vấn.';
+            status.style.color = '#6f6';
+          })
+          .catch(function(err) {
+            status.textContent = 'Lỗi: ' + (err.message || 'Từ chối hoặc không truy cập được micro.');
+            status.style.color = '#f66';
+          });
+      });
+
+      // Start interview
+      document.getElementById('btnStart').addEventListener('click', async () => {
+        const url = baseUrl() + '/api/interview/start';
+        const t = token();
+        if (!t) { log('startLog', 'Nhập JWT token (đăng nhập trên Swagger trước).', true); return; }
+        clearLog('startLog');
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + t },
+            body: JSON.stringify({ jobRole: document.getElementById('jobRole').value || 'Lập trình viên Backend' })
+          });
+          const text = await res.text();
+          const data = text ? (function(){ try { return JSON.parse(text); } catch(_) { return null; } })() : null;
+          if (!res.ok) { log('startLog', 'Lỗi ' + res.status + ': ' + (data ? (data.title || data.message || data.detail) : text) || res.statusText, true); return; }
+          if (!data) { log('startLog', 'Phản hồi không hợp lệ (rỗng hoặc không phải JSON).', true); return; }
+          sessionId = data.sessionId;
+          var raw = Array.isArray(data.questions) ? data.questions : [];
+          questions = raw.map(function(q) { return typeof q === 'string' ? { question: q, description: '' } : { question: q.question || '', description: q.description || '' }; });
+          if (!questions.length) { log('startLog', 'Không có câu hỏi nào.', true); return; }
+          log('startLog', 'Session ID: ' + sessionId, false);
+          log('startLog', 'Số câu hỏi: ' + questions.length, false);
+          document.getElementById('stepQuestions').style.display = 'block';
+          document.getElementById('questionsList').innerHTML = questions.map(function(q, i) {
+            return '<div class="q"><strong>' + (i + 1) + '. ' + escapeHtml(q.question) + '</strong>' + (q.description ? '<p class="q-desc">' + escapeHtml(q.description) + '</p>' : '') + '</div>';
+          }).join('');
+          currentQuestionIndex = 0;
+          showCurrentQuestion();
+        } catch (e) {
+          log('startLog', 'Lỗi kết nối: ' + e.message, true);
+        }
+      });
+
+      function escapeHtml(s) {
+        const div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      // Chọn giọng ưu tiên: tiếng Việt, rồi giọng natural/premium để bớt robot
+      var preferredVoice = null;
+      function initVoices() {
+        var voices = window.speechSynthesis.getVoices();
+        if (!voices.length) return;
+        var vi = voices.filter(function(v) { return v.lang === 'vi-VN' || v.lang.startsWith('vi'); });
+        var natural = voices.filter(function(v) { return /natural|premium|online|female|male/i.test(v.name) && (v.lang.startsWith('vi') || v.lang.startsWith('en')); });
+        preferredVoice = (vi[0] || natural[0] || voices.find(function(v) { return v.lang.startsWith('vi'); }) || voices[0]) || null;
+      }
+      if (window.speechSynthesis) {
+        initVoices();
+        window.speechSynthesis.onvoiceschanged = initVoices;
+      }
+
+      function speakQuestion(text, onEnd) {
+        if (!text || !window.speechSynthesis) { if (onEnd) onEnd(); return; }
+        window.speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(text);
+        u.lang = 'vi-VN';
+        u.rate = 0.92;
+        u.pitch = 1.03;
+        if (preferredVoice) u.voice = preferredVoice;
+        u.onend = function() { if (onEnd) onEnd(); };
+        window.speechSynthesis.speak(u);
+      }
+
+      function startListening() {
+        if (!recognition) recognition = initRecognition();
+        if (!recognition || isSubmitting) return;
+        currentTranscript = '';
+        isListening = true;
+        document.getElementById('statusLine').textContent = '🎤 Đang nghe... Nói câu trả lời. Tự gửi sau ' + (SILENCE_MS/1000) + ' giây im lặng.';
+        document.getElementById('statusLine').style.color = '#6f6';
+        document.getElementById('transcriptLog').textContent = '(đang nghe...)';
+        document.getElementById('transcriptLog').className = 'log';
+        recognition.start();
+      }
+
+      function stopListeningAndMaybeSubmit() {
+        if (!isListening) return;
+        try { recognition && recognition.stop(); } catch(e) {}
+        isListening = false;
+        document.getElementById('statusLine').textContent = 'Đã dừng nghe.';
+        if (currentTranscript.trim()) doSubmit();
+        else {
+          document.getElementById('transcriptLog').textContent = '(Chưa có câu trả lời. Nói rõ hơn hoặc bấm "Nghe lại câu hỏi" rồi trả lời.)';
+          document.getElementById('transcriptLog').className = 'log error';
+          startListening();
+        }
+      }
+
+      function scheduleSilenceSubmit() {
+        if (silenceTimeoutId) clearTimeout(silenceTimeoutId);
+        silenceTimeoutId = setTimeout(function() {
+          silenceTimeoutId = null;
+          if (isListening && currentTranscript.trim()) stopListeningAndMaybeSubmit();
+        }, SILENCE_MS);
+      }
+
+      function showCurrentQuestion() {
+        document.getElementById('stepAnswer').style.display = 'block';
+        if (currentQuestionIndex >= questions.length) {
+          document.getElementById('currentQuestionText').textContent = '✅ Đã trả lời hết. Có thể bắt đầu phiên mới.';
+          document.getElementById('currentQuestionDesc').textContent = '';
+          document.getElementById('btnHearQuestion').style.display = 'none';
+          document.getElementById('btnSubmitEarly').style.display = 'none';
+          document.getElementById('transcriptLog').style.display = 'none';
+          document.getElementById('statusLine').textContent = '';
+          return;
+        }
+        var item = questions[currentQuestionIndex];
+        var qText = typeof item === 'string' ? item : item.question;
+        var desc = typeof item === 'string' ? '' : (item.description || '');
+        document.getElementById('currentQuestionText').textContent = 'Câu ' + (currentQuestionIndex + 1) + ': ' + qText;
+        document.getElementById('currentQuestionDesc').textContent = desc;
+        document.getElementById('currentQuestionDesc').style.display = desc ? 'block' : 'none';
+        document.getElementById('btnHearQuestion').style.display = 'block';
+        document.getElementById('btnSubmitEarly').style.display = 'block';
+        document.getElementById('transcriptLog').style.display = 'block';
+        clearLog('evaluateLog');
+        currentTranscript = '';
+        document.getElementById('statusLine').textContent = '🔊 Đang đọc câu hỏi...';
+        speakQuestion(qText, function() {
+          startListening();
+        });
+      }
+
+      document.getElementById('btnHearQuestion').addEventListener('click', function() {
+        if (currentQuestionIndex >= questions.length) return;
+        var item = questions[currentQuestionIndex];
+        var qText = typeof item === 'string' ? item : item.question;
+        speakQuestion(qText, function() {
+          if (isListening) return;
+          startListening();
+        });
+      });
+
+      document.getElementById('btnSubmitEarly').addEventListener('click', function() {
+        if (currentTranscript.trim()) stopListeningAndMaybeSubmit();
+      });
+
+      function initRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+          log('transcriptLog', 'Trình duyệt không hỗ trợ (dùng Chrome).', true);
+          return null;
+        }
+        const rec = new SpeechRecognition();
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.lang = 'vi-VN';
+        rec.onresult = function(e) {
+          var text = '';
+          for (var i = e.resultIndex; i < e.results.length; i++)
+            if (e.results[i].isFinal) text += e.results[i][0].transcript;
+          if (text) {
+            currentTranscript = (currentTranscript || '') + text;
+            document.getElementById('transcriptLog').textContent = currentTranscript || '(đang nghe...)';
+            scheduleSilenceSubmit();
+          }
+        };
+        rec.onerror = function(e) {
+          if (e.error !== 'aborted') log('transcriptLog', 'Lỗi: ' + e.error, true);
+        };
+        rec.onend = function() {
+          if (isListening && !isSubmitting) setTimeout(function() { recognition && recognition.start(); }, 300);
+        };
+        return rec;
+      }
+
+      async function doSubmit() {
+        if (currentQuestionIndex >= questions.length || !sessionId || !currentTranscript.trim()) return;
+        if (isSubmitting) return;
+        isSubmitting = true;
+        if (silenceTimeoutId) { clearTimeout(silenceTimeoutId); silenceTimeoutId = null; }
+        var url = baseUrl() + '/api/interview/evaluate';
+        clearLog('evaluateLog');
+        log('evaluateLog', 'Đang gửi cho AI chấm...', false);
+        document.getElementById('statusLine').textContent = '⏳ Đang chấm điểm...';
+        document.getElementById('statusLine').style.color = '#aaa';
+        try {
+          var res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token() },
+            body: JSON.stringify({
+              sessionId: sessionId,
+              questionText: (function(){ var it = questions[currentQuestionIndex]; return typeof it === 'string' ? it : it.question; })(),
+              transcript: currentTranscript
+            })
+          });
+          const text = await res.text();
+          const data = text ? (function(){ try { return JSON.parse(text); } catch(_) { return null; } })() : null;
+          if (!res.ok) { log('evaluateLog', 'Lỗi ' + res.status + ': ' + (data ? (data.title || data.message || data.detail) : text) || res.statusText, true); isSubmitting = false; startListening(); return; }
+          if (!data) { log('evaluateLog', 'Phản hồi không hợp lệ.', true); isSubmitting = false; startListening(); return; }
+          log('evaluateLog', 'Điểm: ' + data.score + '/10', false);
+          log('evaluateLog', 'Feedback: ' + (data.feedback || ''), false);
+          document.getElementById('evaluateLog').classList.add('success');
+          currentQuestionIndex++;
+          isSubmitting = false;
+          setTimeout(function() {
+            showCurrentQuestion();
+          }, 1500);
+        } catch (e) {
+          log('evaluateLog', 'Lỗi: ' + e.message, true);
+          isSubmitting = false;
+          startListening();
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

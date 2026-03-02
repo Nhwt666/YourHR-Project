@@ -1,0 +1,25 @@
+# Global
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+.vs/
+
+# Frontend
+aimasio-fe/node_modules/
+aimasio-fe/dist/
+aimasio-fe/dist-ssr/
+
+# Backend
+aimasio-be/AIInterview/bin/
+aimasio-be/AIInterview/obj/
+aimasio-be/AIInterview/bin_temp_check/
+aimasio-be/AIInterview/appsettings.Development.json
+
+# Docker
+**/.docker/

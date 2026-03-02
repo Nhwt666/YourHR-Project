@@ -1,0 +1,23 @@
+services:
+  backend:
+    build:
+      context: ./aimasio-be/AIInterview
+      dockerfile: Dockerfile
+    container_name: yourhr-backend
+    ports:
+      - "5298:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+
+  frontend:
+    build:
+      context: ./aimasio-fe
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:5298/api
+    container_name: yourhr-frontend
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
