@@ -39,8 +39,13 @@ const Hero = () => {
               {body}
             </p>
             <div>
-              <Button variant="hero" size="xl" className="h-12 px-7 text-base shadow-[0_14px_30px_-16px_rgba(79,70,229,0.95)]" asChild>
-                <Link to="/dashboard">
+              <Button
+                variant="hero"
+                size="xl"
+                className="h-12 px-7 text-base shadow-[0_14px_30px_-16px_rgba(79,70,229,0.95)]"
+                asChild
+              >
+                <Link to="/interview-setup">
                   <Rocket className="mr-1.5 h-4 w-4" />
                   {cta}
                   <ArrowRight className="ml-1 h-4 w-4" />
