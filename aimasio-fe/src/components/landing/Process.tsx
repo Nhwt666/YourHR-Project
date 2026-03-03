@@ -1,32 +1,32 @@
 const steps = [
   {
     number: "01",
-    title: "Set up your interview",
-    description: "Define the role, add your questions, and configure scoring criteria in minutes.",
+    title: "Chọn hồ sơ phỏng vấn",
+    description: "Chọn vai trò và bối cảnh để AI cá nhân hóa bộ câu hỏi đúng mục tiêu.",
   },
   {
     number: "02",
-    title: "Invite candidates",
-    description: "Share a link. Candidates record answers at their convenience — no scheduling needed.",
+    title: "Phỏng vấn trực tiếp cá nhân hóa",
+    description: "Trả lời theo thời gian thực, AI tự điều chỉnh câu hỏi tiếp theo dựa trên nội dung bạn vừa nói.",
   },
   {
     number: "03",
-    title: "Review & decide",
-    description: "Get AI-scored results with key insights. Compare candidates side-by-side and move fast.",
+    title: "Nhận báo cáo AI ngay lập tức",
+    description: "Xem điểm số, điểm mạnh, khoảng thiếu và đề xuất cải thiện có thể áp dụng ngay.",
   },
 ];
 
 const Process = () => {
   return (
-    <section className="py-24 bg-gradient-to-b from-background-alt to-background">
+    <section id="process" className="py-24 bg-gradient-to-b from-background-alt to-background">
       <div className="container">
         <div className="mb-14">
           <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
-            How it works
+            Quy trình hoạt động
           </span>
-          <h2 className="text-heading max-w-2xl">Three steps from job post to hire</h2>
+          <h2 className="text-heading max-w-2xl">3 bước để hoàn thành một buổi phỏng vấn cá nhân hóa</h2>
           <p className="text-body-sm text-muted-foreground mt-3 max-w-xl">
-            A clearer interview workflow that helps you screen faster and decide with confidence.
+            Luồng xử lý gọn gàng: chọn bối cảnh, phỏng vấn, nhận báo cáo AI có cấu trúc.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
@@ -37,7 +37,7 @@ const Process = () => {
             >
               <div className="mb-4 flex items-center justify-between">
                 <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                  Step
+                  Bước
                 </span>
                 <span className="text-3xl font-bold text-primary/20 select-none leading-none">{s.number}</span>
               </div>

@@ -67,6 +67,10 @@ public class InterviewController : ControllerBase
             return Ok(new StartInterviewResponse(result.SessionId));
         }
         catch (ArgumentException ex) { return BadRequest(ex.Message); }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Start interview failed: {ex.Message}");
+        }
     }
 
     /// <summary>

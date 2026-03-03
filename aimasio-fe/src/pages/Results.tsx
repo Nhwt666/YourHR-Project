@@ -8,10 +8,10 @@ type QaLogItem = {
 };
 
 const scores = [
-  { label: "Technical depth", score: 8.5 },
-  { label: "Communication", score: 7.2 },
-  { label: "Problem solving", score: 9.0 },
-  { label: "Culture fit", score: 7.8 },
+  { label: "Độ sâu kỹ thuật", score: 8.5 },
+  { label: "Giao tiếp", score: 7.2 },
+  { label: "Giải quyết vấn đề", score: 9.0 },
+  { label: "Phù hợp văn hóa", score: 7.8 },
 ];
 
 const Results = () => {
@@ -36,8 +36,8 @@ const Results = () => {
         <div className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-3">
           Final evaluation
         </div>
-        <h1 className="text-heading">Results</h1>
-        <p className="text-sm text-muted-foreground mt-1">AI-scored assessment for the latest candidate.</p>
+        <h1 className="text-heading">Kết quả</h1>
+        <p className="text-sm text-muted-foreground mt-1">Báo cáo đánh giá AI cho buổi phỏng vấn gần nhất.</p>
       </div>
 
       <div className="max-w-4xl space-y-6">
@@ -47,25 +47,25 @@ const Results = () => {
               <span className="text-2xl font-bold text-primary">{overallScore}</span>
             </div>
             <div>
-              <h2 className="text-base font-semibold">Overall score</h2>
+              <h2 className="text-base font-semibold">Điểm tổng quan</h2>
               <p className="text-sm text-muted-foreground">
-                {savedResult ? "From latest interview end result" : `Based on ${scores.length} evaluation criteria`}
+                {savedResult ? "Lấy từ kết quả buổi phỏng vấn mới nhất" : `Tổng hợp từ ${scores.length} tiêu chí đánh giá`}
               </p>
             </div>
           </div>
           <div className="rounded-xl border border-border p-6 bg-background">
             <div className="flex items-center gap-2 text-sm font-medium text-foreground mb-1">
               <Trophy className="h-4 w-4 text-primary" />
-              Recommendation
+              Khuyến nghị
             </div>
             <p className="text-sm text-muted-foreground">
-              {Number(overallScore) >= 8 ? "Strong fit - move to next round." : "Needs improvement before next round."}
+              {Number(overallScore) >= 8 ? "Phù hợp tốt - đề xuất vào vòng tiếp theo." : "Cần cải thiện trước khi vào vòng tiếp theo."}
             </p>
           </div>
         </div>
 
         <div className="space-y-4 rounded-xl border border-border bg-background p-5">
-          <h2 className="text-base font-semibold">Breakdown</h2>
+          <h2 className="text-base font-semibold">Chi tiết điểm</h2>
           {scores.map((s) => (
             <div key={s.label} className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground w-36 shrink-0">{s.label}</span>
@@ -81,20 +81,20 @@ const Results = () => {
         </div>
 
         <div className="rounded-xl border border-border bg-background p-5">
-          <h2 className="text-base font-semibold mb-3">AI Summary</h2>
+          <h2 className="text-base font-semibold mb-3">Tổng kết AI</h2>
           <p className="text-sm text-muted-foreground leading-relaxed">
             {savedResult?.feedback ??
-              "Strong technical candidate with deep expertise in frontend architecture. Demonstrated excellent problem-solving skills with clear, structured thinking. Communication could be more concise in some areas. Recommended for next round with a focus on system design discussion."}
+              "Ứng viên có nền tảng kỹ thuật tốt và tư duy giải quyết vấn đề rõ ràng. Khả năng trình bày cần gọn hơn ở một vài điểm. Đề xuất vào vòng tiếp theo với trọng tâm về system design."}
           </p>
         </div>
 
         {savedResult?.qaLogs?.length ? (
           <div className="rounded-xl border border-border bg-background p-5 space-y-4">
-            <h2 className="text-base font-semibold">Interview log</h2>
+            <h2 className="text-base font-semibold">Nhật ký phỏng vấn</h2>
             {savedResult.qaLogs.map((item, index) => (
               <div key={`${item.question}-${index}`} className="rounded-lg border border-border p-4 space-y-2">
-                <p className="text-sm font-medium text-foreground">Q: {item.question}</p>
-                <p className="text-sm text-muted-foreground">A: {item.answer}</p>
+                <p className="text-sm font-medium text-foreground">Hỏi: {item.question}</p>
+                <p className="text-sm text-muted-foreground">Đáp: {item.answer}</p>
               </div>
             ))}
           </div>

@@ -4,18 +4,32 @@ services:
       context: ./aimasio-be/AIInterview
       dockerfile: Dockerfile
     container_name: yourhr-backend
+    env_file:
+      - ./.env
     ports:
       - "5298:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      ConnectionStrings__DefaultConnection: ${ConnectionStrings__DefaultConnection}
+      Jwt__Secret: ${Jwt__Secret}
+      Jwt__Issuer: ${Jwt__Issuer:-AIInterview}
+      Jwt__Audience: ${Jwt__Audience:-AIInterview}
+      DId__ApiKey: ${DId__ApiKey}
+      DId__SourceUrl: ${DId__SourceUrl}
+      DId__AgentId: ${DId__AgentId}
+    networks:
+      default:
+        aliases:
+          - be
 
   frontend:
     build:
       context: ./aimasio-fe
       dockerfile: Dockerfile
       args:
-        VITE_API_BASE_URL: http://localhost:5298/api
+        VITE_API_BASE_URL: /api
     container_name: yourhr-frontend
     depends_on:
       - backend

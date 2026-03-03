@@ -5,47 +5,42 @@ import { Link } from "react-router-dom";
 const plans = [
   {
     name: "Starter",
-    price: "$6",
-    period: "/week",
-    description: "For new candidates preparing their first interviews.",
-    features: [
-      "3-day free trial",
-      "20 AI interview sessions/week",
-      "Core AI scoring and feedback",
-      "Email support",
-    ],
-    cta: "Start 3-day trial",
+    price: "169.000đ",
+    period: "/tuần",
+    description: "Phù hợp cho sinh viên và ứng viên mới luyện phỏng vấn.",
+    features: ["8 phiên phỏng vấn/tuần", "Luyện trước 1-2 vòng phỏng vấn quan trọng", "Chấm điểm AI cơ bản và gợi ý cải thiện", "Hỗ trợ qua email"],
+    cta: "Bắt đầu với Starter",
     featured: false,
   },
   {
     name: "Standard",
-    price: "$29",
-    period: "/month",
-    description: "For consistent weekly practice with practical interview coaching.",
+    price: "399.000đ",
+    period: "/tháng",
+    description: "Gói bán chính cho luyện tập đều đặn và theo dõi tiến bộ.",
     features: [
-      "80 AI interview sessions/month",
-      "Question bank by role and level",
-      "Progress tracking and score trends",
-      "CV review and improvement tips",
-      "Priority support",
+      "50 phiên phỏng vấn/tháng",
+      "Ngân hàng câu hỏi theo vai trò và cấp độ",
+      "Theo dõi điểm và tiến độ theo tuần",
+      "Đánh giá CV và gợi ý nâng cấp",
+      "Hỗ trợ ưu tiên",
     ],
-    cta: "Choose Standard",
+    cta: "Chọn Standard",
     featured: true,
   },
   {
-    name: "Career+",
-    price: "$79",
-    period: "/month",
-    description: "For serious job seekers who want personal guidance until they land an offer.",
+    name: "Premium",
+    price: "699.000đ",
+    period: "/tháng",
+    description: "Dành cho người luyện gấp và ứng tuyển nhiều công ty cùng lúc.",
     features: [
-      "Unlimited AI interview sessions",
-      "Personalized interview roadmap",
-      "Adaptive follow-up by weak topics",
-      "Weekly readiness report and action plan",
-      "Offer-focused coaching mode",
-      "Fastest support response",
+      "100 phiên phỏng vấn/tháng",
+      "Lộ trình phỏng vấn cá nhân hóa",
+      "Follow-up thích ứng theo điểm yếu",
+      "Báo cáo sẵn sàng hàng tuần",
+      "Chế độ luyện tập hướng offer",
+      "Hỗ trợ nhanh nhất",
     ],
-    cta: "Choose Career+",
+    cta: "Chọn Premium",
     featured: false,
   },
 ];
@@ -55,12 +50,11 @@ const Pricing = () => {
     <section id="pricing" className="py-24">
       <div className="container">
         <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground mb-4">
-          Pricing
+          Bảng giá
         </span>
-        <h2 className="text-heading mb-4 max-w-md">Simple, transparent pricing</h2>
+        <h2 className="text-heading mb-4 max-w-md">Giá rõ ràng, dễ chọn theo mục tiêu</h2>
         <p className="text-body-sm text-muted-foreground mb-14 max-w-2xl">
-          Built for long-term interview prep. Start with a short trial, then scale to structured growth or full
-          personalized coaching.
+          Bắt đầu với gói nhỏ để luyện nền tảng, sau đó nâng cấp theo tần suất luyện tập và mục tiêu ứng tuyển.
         </p>
         <div className="grid md:grid-cols-3 gap-6">
           {plans.map((plan) => (
@@ -76,7 +70,7 @@ const Pricing = () => {
                 <h3 className="text-subheading">{plan.name}</h3>
                 {plan.featured && (
                   <span className="inline-flex items-center rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-primary">
-                    Popular
+                    Gói phổ biến
                   </span>
                 )}
               </div>

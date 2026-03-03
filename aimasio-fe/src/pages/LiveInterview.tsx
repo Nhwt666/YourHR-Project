@@ -1,6 +1,6 @@
 import AppShell from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { Square } from "lucide-react";
+import { Mic, Video, PhoneOff } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as did from "@d-id/client-sdk";
@@ -14,30 +14,34 @@ type QaLogItem = {
 const LiveInterview = () => {
   const navigate = useNavigate();
   const [isListening, setIsListening] = useState(false);
-  const [questionText, setQuestionText] = useState("Loading question...");
+  const [questionText, setQuestionText] = useState("Đang tải câu hỏi...");
   const [questionDescription, setQuestionDescription] = useState("");
   const [transcript, setTranscript] = useState("");
   const [qaLogs, setQaLogs] = useState<QaLogItem[]>([]);
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
-  const [avatarStatus, setAvatarStatus] = useState("Connecting AI HR...");
+  const [avatarStatus, setAvatarStatus] = useState("Đang kết nối AI HR...");
   const [avatarMode, setAvatarMode] = useState<"sdk" | "fallback">("sdk");
+  const [micEnabled, setMicEnabled] = useState(false);
+  const [cameraEnabled, setCameraEnabled] = useState(false);
   const recognitionRef = useRef<any>(null);
   const silenceTimerRef = useRef<number | null>(null);
   const speakDoneTimerRef = useRef<number | null>(null);
   const isSubmittingRef = useRef(false);
   const shouldKeepListeningRef = useRef(false);
   const transcriptRef = useRef("");
-  const questionTextRef = useRef("Loading question...");
+  const questionTextRef = useRef("Đang tải câu hỏi...");
   const pendingListenAfterSpeechRef = useRef(false);
   const lastSpokenTextRef = useRef("");
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteStreamRef = useRef<MediaStream | null>(null);
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
   const agentManagerRef = useRef<any>(null);
   const isFinishingInterviewRef = useRef(false);
 
   const sessionId = localStorage.getItem("aimasio_session_id");
-  const role = localStorage.getItem("aimasio_role") ?? "Candidate Session";
+  const role = localStorage.getItem("aimasio_role") ?? "Phiên ứng viên";
   const didAgentId = import.meta.env.VITE_DID_AGENT_ID ?? "v2_agt_7OafqFLv";
   const didClientKey =
     import.meta.env.VITE_DID_CLIENT_KEY ??
@@ -45,9 +49,9 @@ const LiveInterview = () => {
   const SILENCE_MS = 2500;
 
   const mapDidError = (error: unknown) => {
-    const raw = error instanceof Error ? error.message : "Unknown D-ID SDK error";
+    const raw = error instanceof Error ? error.message : "Lỗi D-ID SDK không xác định";
     if (raw.toLowerCase().includes("failed to fetch")) {
-      return `D-ID SDK cannot connect. Please add ${window.location.origin} to D-ID allowed domains. Switching to fallback mode.`;
+      return `D-ID SDK không thể kết nối. Vui lòng thêm ${window.location.origin} vào danh sách domain được phép trên D-ID. Hệ thống sẽ chuyển sang chế độ fallback.`;
     }
     return raw;
   };
@@ -126,7 +130,7 @@ const LiveInterview = () => {
   const initAvatarSdk = async () => {
     if (agentManagerRef.current) return;
     if (!didAgentId || !didClientKey) {
-      throw new Error("Missing D-ID Agent ID or client key.");
+      throw new Error("Thiếu D-ID Agent ID hoặc client key.");
     }
 
     const callbacks = {
@@ -139,7 +143,7 @@ const LiveInterview = () => {
         remoteVideoRef.current.volume = 1;
         void remoteVideoRef.current.play().catch(() => {
           // Browser may block autoplay with audio until a user gesture.
-          setAvatarStatus("Audio autoplay is blocked by browser.");
+          setAvatarStatus("Trình duyệt đang chặn tự động phát âm thanh.");
         });
         return value;
       },
@@ -152,7 +156,7 @@ const LiveInterview = () => {
             remoteVideoRef.current.src = idleVideo;
             void remoteVideoRef.current.play().catch(() => {});
           }
-          setAvatarStatus("AI HR is listening...");
+          setAvatarStatus("AI HR đang lắng nghe...");
           clearSpeakDoneTimer();
           if (pendingListenAfterSpeechRef.current) {
             pendingListenAfterSpeechRef.current = false;
@@ -165,14 +169,14 @@ const LiveInterview = () => {
             remoteVideoRef.current.srcObject = remoteStreamRef.current;
             void remoteVideoRef.current.play().catch(() => {});
           }
-          setAvatarStatus("AI HR is speaking...");
+          setAvatarStatus("AI HR đang nói...");
         }
       },
       onConnectionStateChange(state: string) {
-        if (state === "connected") setAvatarStatus("AI HR connected.");
+        if (state === "connected") setAvatarStatus("AI HR đã kết nối.");
       },
       onError(error: unknown) {
-        setAvatarStatus(`AI HR error: ${mapDidError(error)}`);
+        setAvatarStatus(`Lỗi AI HR: ${mapDidError(error)}`);
       },
     };
 
@@ -204,6 +208,16 @@ const LiveInterview = () => {
     remoteStreamRef.current = null;
   };
 
+  const cleanupLocalStream = () => {
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach((track) => track.stop());
+      localStreamRef.current = null;
+    }
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = null;
+    }
+  };
+
   const speakAsAvatar = async (text: string) => {
     lastSpokenTextRef.current = text;
     stopAutoListening();
@@ -215,7 +229,7 @@ const LiveInterview = () => {
         // Try to recover live agent mode so avatar returns to the original stream face.
         await initAvatarSdk();
         setAvatarMode("sdk");
-        setAvatarStatus("AI HR reconnected.");
+        setAvatarStatus("AI HR đã kết nối lại.");
       } catch {
         // Keep fallback mode if reconnect fails.
       }
@@ -228,7 +242,7 @@ const LiveInterview = () => {
         speakDoneTimerRef.current = window.setTimeout(() => {
           if (pendingListenAfterSpeechRef.current) {
             pendingListenAfterSpeechRef.current = false;
-            setAvatarStatus("AI HR is listening...");
+            setAvatarStatus("AI HR đang lắng nghe...");
             startAutoListening();
           }
         }, timeoutMs);
@@ -245,7 +259,7 @@ const LiveInterview = () => {
       } catch (error) {
         clearSpeakDoneTimer();
         setAvatarMode("fallback");
-        setAvatarStatus(`SDK failed: ${mapDidError(error)}`);
+        setAvatarStatus(`SDK lỗi: ${mapDidError(error)}`);
       }
     }
 
@@ -265,9 +279,9 @@ const LiveInterview = () => {
       await remoteVideoRef.current.play().catch(() => {
         speakTextLocalFallback(text);
       });
-      setAvatarStatus("Fallback avatar clip mode.");
+      setAvatarStatus("Đang chạy chế độ clip fallback.");
     } else {
-      setAvatarStatus("Fallback avatar is processing.");
+      setAvatarStatus("Avatar fallback đang xử lý.");
       pendingListenAfterSpeechRef.current = false;
       speakTextLocalFallback(text);
     }
@@ -290,22 +304,22 @@ const LiveInterview = () => {
 
   const requestMicPermission = async () => {
     if (!navigator.mediaDevices?.getUserMedia) {
-      setStatus("Browser does not support microphone permissions.");
+      setStatus("Trình duyệt không hỗ trợ cấp quyền microphone.");
       return;
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((track) => track.stop());
-      setStatus("Microphone ready. Answer naturally, auto-submit is enabled.");
+      setStatus("Microphone sẵn sàng. Bạn có thể trả lời tự nhiên, hệ thống tự động gửi.");
     } catch (error) {
-      setStatus(error instanceof Error ? `Microphone permission error: ${error.message}` : "Microphone permission denied.");
+      setStatus(error instanceof Error ? `Lỗi quyền microphone: ${error.message}` : "Bạn đã từ chối quyền microphone.");
     }
   };
 
   const startAutoListening = () => {
     const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognitionCtor) {
-      setStatus("Speech recognition is not supported in this browser. Please use Chrome.");
+      setStatus("Trình duyệt hiện tại không hỗ trợ nhận diện giọng nói. Vui lòng dùng Chrome.");
       return;
     }
 
@@ -346,7 +360,7 @@ const LiveInterview = () => {
       if (err === "not-allowed" || err === "service-not-allowed") {
         shouldKeepListeningRef.current = false;
       }
-      setStatus(`Mic error: ${err}`);
+      setStatus(`Lỗi microphone: ${err}`);
     };
 
     recognition.onend = () => {
@@ -368,9 +382,9 @@ const LiveInterview = () => {
     try {
       recognition.start();
       setIsListening(true);
-      setStatus("AI is listening... please answer.");
+      setStatus("AI đang lắng nghe... vui lòng trả lời.");
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Cannot start microphone.");
+      setStatus(error instanceof Error ? error.message : "Không thể bật microphone.");
       setIsListening(false);
     }
   };
@@ -379,8 +393,8 @@ const LiveInterview = () => {
     const latestTranscript = transcriptRef.current.trim();
     const latestQuestion = questionTextRef.current;
     if (!sessionId || isSubmittingRef.current) return;
-    if (!latestQuestion || latestQuestion === "Loading question...") return;
-    if (latestQuestion === "No more questions. You can end interview.") return;
+    if (!latestQuestion || latestQuestion === "Đang tải câu hỏi...") return;
+    if (latestQuestion === "Đã hết câu hỏi. Bạn có thể kết thúc phỏng vấn.") return;
     if (!latestTranscript) return;
 
     try {
@@ -401,7 +415,7 @@ const LiveInterview = () => {
       setQaLogs((prev) => [...prev, { question: latestQuestion, answer: latestTranscript }]);
       transcriptRef.current = "";
       setTranscript("");
-      setStatus("Da ghi nhan cau tra loi. Dang chuyen sang cau tiep theo...");
+      setStatus("Đã ghi nhận câu trả lời. Đang chuyển sang câu tiếp theo...");
       await speakAsAvatarSafely(getTransitionLine());
       // Safety cap: never exceed 5 answered questions in one interview.
       if (qaLogs.length + 1 >= 5) {
@@ -416,7 +430,7 @@ const LiveInterview = () => {
         setQaLogs((prev) => [...prev, { question: latestQuestion, answer: latestTranscript }]);
         transcriptRef.current = "";
         setTranscript("");
-        setStatus("Da ghi nhan cau tra loi. Dang chuyen sang cau tiep theo...");
+        setStatus("Đã ghi nhận câu trả lời. Đang chuyển sang câu tiếp theo...");
         await speakAsAvatarSafely(getTransitionLine());
         if (qaLogs.length + 1 >= 5) {
           await speakAsAvatarSafely("Cảm ơn em đã tham gia buổi phỏng vấn hôm nay. Anh/chị sẽ chấm điểm và tổng hợp kết quả ngay.");
@@ -426,7 +440,7 @@ const LiveInterview = () => {
         await loadQuestion();
         return;
       }
-      setStatus(error instanceof Error ? error.message : "Failed to process answer.");
+      setStatus(error instanceof Error ? error.message : "Không thể xử lý câu trả lời.");
       startAutoListening();
     } finally {
       setLoading(false);
@@ -446,7 +460,7 @@ const LiveInterview = () => {
       localStorage.setItem("aimasio_result", JSON.stringify({ ...result, qaLogs }));
       navigate("/results");
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Failed to finalize interview.");
+      setStatus(error instanceof Error ? error.message : "Không thể kết thúc buổi phỏng vấn.");
       isFinishingInterviewRef.current = false;
     } finally {
       setLoading(false);
@@ -455,7 +469,7 @@ const LiveInterview = () => {
 
   const loadQuestion = async () => {
     if (!sessionId) {
-      setStatus("Missing session. Please create interview first.");
+      setStatus("Thiếu phiên làm việc. Vui lòng tạo buổi phỏng vấn trước.");
       return;
     }
 
@@ -463,9 +477,9 @@ const LiveInterview = () => {
       setLoading(true);
       const next = await getNextQuestion(sessionId);
       if (!next) {
-        setQuestionText("No more questions. You can end interview.");
+        setQuestionText("Đã hết câu hỏi. Bạn có thể kết thúc phỏng vấn.");
         setQuestionDescription("");
-        setAvatarStatus("Interview complete.");
+        setAvatarStatus("Đã hoàn thành phỏng vấn.");
         await speakAsAvatarSafely("Cảm ơn em đã tham gia buổi phỏng vấn hôm nay. Anh/chị đã ghi nhận phần trả lời cuối, bây giờ anh/chị sẽ chấm điểm và tổng hợp kết quả ngay.");
         await finalizeInterview();
         return;
@@ -475,8 +489,8 @@ const LiveInterview = () => {
       setStatus("");
       await speakAsAvatar(next.question);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Failed to load question.");
-      setAvatarStatus("Avatar unavailable.");
+      setStatus(error instanceof Error ? error.message : "Không thể tải câu hỏi.");
+      setAvatarStatus("Không thể sử dụng avatar.");
     } finally {
       setLoading(false);
     }
@@ -490,7 +504,6 @@ const LiveInterview = () => {
         setAvatarMode("fallback");
         setAvatarStatus(mapDidError(error));
       }
-      await requestMicPermission();
       await speakAsAvatar("Chào bạn, mình là AI HR của YourHR AI. Chúng ta bắt đầu buổi phỏng vấn nhé.");
       await loadQuestion();
     })();
@@ -498,54 +511,138 @@ const LiveInterview = () => {
       stopAutoListening();
       window.speechSynthesis?.cancel?.();
       void cleanupAvatarSdk();
+      cleanupLocalStream();
     };
   }, []);
 
   const handleEnd = async () => {
     if (!sessionId) {
-      setStatus("Missing session. Please create interview first.");
+      setStatus("Thiếu phiên làm việc. Vui lòng tạo buổi phỏng vấn trước.");
       return;
     }
     await finalizeInterview();
   };
 
+  const handleMicToggle = async () => {
+    if (micEnabled) {
+      stopAutoListening();
+      setMicEnabled(false);
+      setStatus("Đã tắt microphone cho buổi phỏng vấn.");
+      return;
+    }
+    await requestMicPermission();
+    startAutoListening();
+    setMicEnabled(true);
+  };
+
+  const handleCameraToggle = async () => {
+    if (cameraEnabled) {
+      cleanupLocalStream();
+      setCameraEnabled(false);
+      setStatus("Đã tắt camera xem trước.");
+      return;
+    }
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setStatus("Trình duyệt không hỗ trợ camera.");
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      localStreamRef.current = stream;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+        await localVideoRef.current.play().catch(() => {});
+      }
+      setCameraEnabled(true);
+      setStatus("Camera đã bật. Bạn có thể xem trước khung hình của mình.");
+    } catch (error) {
+      setStatus(
+        error instanceof Error ? `Lỗi quyền camera: ${error.message}` : "Bạn đã từ chối quyền camera."
+      );
+    }
+  };
+
   return (
     <AppShell>
-      <div className="rounded-2xl border border-border bg-background p-6 mb-6">
-        <div className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-3">
-          Live session
-        </div>
-        <h1 className="text-heading">Live interview</h1>
-        <p className="text-sm text-muted-foreground mt-1">{role} — Candidate Session</p>
-      </div>
+      <div className="max-w-5xl space-y-6">
+        <div className="rounded-2xl border border-border bg-background p-4 md:p-5 shadow-sm">
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground">Phiên phỏng vấn trực tuyến</p>
+              <h1 className="text-lg md:text-2xl font-semibold text-foreground mt-1">Live interview</h1>
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                {role} — Phiên ứng viên
+              </p>
+            </div>
+            <span className="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary">
+              Đang ghi nhận
+            </span>
+          </div>
 
-      <div className="max-w-4xl space-y-6">
-        <div className="rounded-xl border border-border bg-background p-4">
-          <p className="text-xs text-muted-foreground mb-3">AI HR avatar</p>
-          <div className="rounded-lg border border-border overflow-hidden bg-black">
+          <div className="relative mt-3 rounded-xl border border-border bg-black overflow-hidden">
             <video
               ref={remoteVideoRef}
               autoPlay
               playsInline
-              className="w-full h-[420px] md:h-[480px] object-contain object-center bg-black"
+              className="w-full h-[360px] md:h-[440px] object-contain object-center bg-black"
             />
+            <div className="absolute bottom-4 right-4 w-28 md:w-40 rounded-md border border-border bg-background/90 shadow-sm overflow-hidden">
+              {cameraEnabled ? (
+                <video
+                  ref={localVideoRef}
+                  autoPlay
+                  muted
+                  playsInline
+                  className="h-20 md:h-24 w-full object-cover object-center"
+                />
+              ) : (
+                <div className="flex h-20 md:h-24 w-full items-center justify-center bg-surface text-xs text-muted-foreground">
+                  Xem trước camera
+                </div>
+              )}
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">{avatarStatus}</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {isListening ? "Listening..." : "Waiting for AI / processing..."}
-          </p>
+
+          <div className="mt-3 flex flex-col items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={handleMicToggle}
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border ${
+                  micEnabled ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-muted-foreground"
+                }`}
+                disabled={loading}
+              >
+                <Mic className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={handleCameraToggle}
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border ${
+                  cameraEnabled ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-muted-foreground"
+                }`}
+                disabled={loading}
+              >
+                <Video className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={handleEnd}
+                disabled={loading}
+                className="inline-flex h-9 items-center gap-1.5 rounded-full bg-destructive px-4 text-xs font-medium text-destructive-foreground"
+              >
+                <PhoneOff className="h-4 w-4" />
+                Kết thúc
+              </button>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              {avatarStatus} · {isListening ? "Microphone đang bật, AI đang lắng nghe bạn." : "Nhấn micro để bật ghi âm trả lời."}
+            </p>
+          </div>
         </div>
 
-        <div className="pt-1">
-          <Button
-            variant="outline"
-            className="text-destructive hover:text-destructive"
-            onClick={handleEnd}
-            disabled={loading}
-          >
-            <Square className="h-4 w-4 mr-2" /> End interview
-          </Button>
-        </div>
         {status ? (
           <p className="text-xs rounded-md px-2.5 py-1.5 inline-flex text-muted-foreground bg-surface border border-border">
             {status}

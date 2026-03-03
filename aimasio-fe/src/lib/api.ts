@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5298/api";
+// In production, prefer same-origin /api (proxied by frontend server/nginx).
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 export const TOKEN_STORAGE_KEY = "aimasio_access_token";
 

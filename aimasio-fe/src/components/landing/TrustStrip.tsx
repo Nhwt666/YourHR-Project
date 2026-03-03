@@ -7,7 +7,7 @@ const TrustStrip = () => {
     <section className="py-12 border-y border-border">
       <div className="container">
         <p className="text-xs text-muted-foreground uppercase tracking-widest mb-6 text-center">
-          Trusted by forward-thinking teams
+          Được tin dùng bởi các đội ngũ hướng tới đổi mới
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
           {logos.map((name) => (

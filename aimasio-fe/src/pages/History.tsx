@@ -3,12 +3,15 @@ import { Link } from "react-router-dom";
 import { Clock3 } from "lucide-react";
 
 const historyData = [
-  { id: 1, role: "Senior Frontend Engineer", candidate: "Alex Chen", score: 8.1, date: "Feb 28, 2026", status: "Completed" },
-  { id: 2, role: "Senior Frontend Engineer", candidate: "Maria Santos", score: 7.4, date: "Feb 27, 2026", status: "Completed" },
-  { id: 3, role: "Product Designer", candidate: "James Kim", score: 8.9, date: "Feb 26, 2026", status: "Completed" },
-  { id: 4, role: "Backend Engineer", candidate: "Sarah Patel", score: 6.8, date: "Feb 24, 2026", status: "Completed" },
-  { id: 5, role: "Backend Engineer", candidate: "Tom Wilson", score: 9.2, date: "Feb 22, 2026", status: "Completed" },
-  { id: 6, role: "Data Analyst", candidate: "Emily Zhang", score: 7.5, date: "Feb 20, 2026", status: "Completed" },
+  { id: 1, role: "Kỹ sư Frontend cấp cao", candidate: "Alex Chen", score: 8.1, date: "28 Thg 2, 2026", status: "Hoàn tất" },
+  { id: 2, role: "Kỹ sư Frontend cấp cao", candidate: "Maria Santos", score: 7.4, date: "27 Thg 2, 2026", status: "Hoàn tất" },
+  { id: 3, role: "Nhà thiết kế sản phẩm", candidate: "James Kim", score: 8.9, date: "26 Thg 2, 2026", status: "Hoàn tất" },
+  { id: 4, role: "Kỹ sư Backend", candidate: "Sarah Patel", score: 6.8, date: "24 Thg 2, 2026", status: "Hoàn tất" },
+  { id: 5, role: "Kỹ sư Backend", candidate: "Tom Wilson", score: 9.2, date: "22 Thg 2, 2026", status: "Hoàn tất" },
+  { id: 6, role: "Chuyên viên phân tích dữ liệu", candidate: "Emily Zhang", score: 7.5, date: "20 Thg 2, 2026", status: "Hoàn tất" },
+  { id: 7, role: "Chuyên viên QA Automation", candidate: "Huy Nguyễn", score: 8.3, date: "19 Thg 2, 2026", status: "Hoàn tất" },
+  { id: 8, role: "Product Owner", candidate: "Linh Trần", score: 7.9, date: "18 Thg 2, 2026", status: "Hoàn tất" },
+  { id: 9, role: "Data Scientist", candidate: "Michael Lee", score: 8.7, date: "16 Thg 2, 2026", status: "Hoàn tất" },
 ];
 
 const History = () => {
@@ -18,25 +21,25 @@ const History = () => {
         <div className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-3">
           Interview archive
         </div>
-        <h1 className="text-heading">History</h1>
-        <p className="text-sm text-muted-foreground mt-1">All past interviews and results.</p>
+        <h1 className="text-heading">Lịch sử</h1>
+        <p className="text-sm text-muted-foreground mt-1">Tất cả buổi phỏng vấn và kết quả trước đó.</p>
       </div>
 
       <div className="rounded-xl border border-border bg-background overflow-hidden">
         <div className="px-5 py-4 border-b border-border flex items-center justify-between">
-          <h2 className="text-base font-semibold">Recent candidates</h2>
+          <h2 className="text-base font-semibold">Ứng viên gần đây</h2>
           <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Clock3 className="h-3.5 w-3.5" /> Last 30 days
+            <Clock3 className="h-3.5 w-3.5" /> 30 ngày gần nhất
           </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-surface/80">
-                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Candidate</th>
-                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Role</th>
-                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Score</th>
-                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Date</th>
+                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Ứng viên</th>
+                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Vị trí</th>
+                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Điểm</th>
+                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Ngày</th>
               </tr>
             </thead>
             <tbody>

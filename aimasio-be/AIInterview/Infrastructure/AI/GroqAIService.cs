@@ -66,16 +66,24 @@ public class GroqAIService : IAIService
             {ragContext}
             """;
 
-        var content = await CallGroqAsync(systemPrompt, userPrompt, cancellationToken);
-        var list = ParseQuestionsWithDescriptions(content)
-            .Where(x => !string.IsNullOrWhiteSpace(x.Question))
-            .GroupBy(x => x.Question.Trim(), StringComparer.OrdinalIgnoreCase)
-            .Select(g => g.First())
-            .Take(targetQuestionCount)
-            .ToList();
+        try
+        {
+            var content = await CallGroqAsync(systemPrompt, userPrompt, cancellationToken);
+            var list = ParseQuestionsWithDescriptions(content)
+                .Where(x => !string.IsNullOrWhiteSpace(x.Question))
+                .GroupBy(x => x.Question.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())
+                .Take(targetQuestionCount)
+                .ToList();
 
-        if (list.Count >= 4) return list;
-        return BuildFallbackQuestions(jobRole, targetQuestionCount);
+            if (list.Count >= 4) return list;
+            return BuildFallbackQuestions(jobRole, targetQuestionCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "GenerateInterviewQuestionsAsync failed. Using fallback questions.");
+            return BuildFallbackQuestions(jobRole, targetQuestionCount);
+        }
     }
 
     public async Task<EvaluateResult> EvaluateSessionAsync(IReadOnlyList<(string Question, string Transcript)> qaPairs, CancellationToken cancellationToken = default)
@@ -136,8 +144,16 @@ public class GroqAIService : IAIService
             {cvText}
             """;
 
-        var content = await CallGroqAsync(systemPrompt, userPrompt, cancellationToken, 0.2);
-        return ParseCvReview(content);
+        try
+        {
+            var content = await CallGroqAsync(systemPrompt, userPrompt, cancellationToken, 0.2);
+            return ParseCvReview(content);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "EvaluateCvAsync failed. Returning fallback CV review.");
+            return BuildCvFallback();
+        }
     }
 
     public async Task<FollowUpGenerationResult> GenerateInterviewerFollowUpAsync(
