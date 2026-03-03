@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/i18n/LanguageContext";
 
-const plans = [
+const plansVi = [
   {
     name: "Starter",
     price: "169.000đ",
@@ -46,15 +47,28 @@ const plans = [
 ];
 
 const Pricing = () => {
+  const { language } = useLanguage();
+  const plans = plansVi; // Nội dung gói giữ tiếng Việt, chỉ dịch phần heading/intro
+
+  const label = language === "en" ? "Pricing" : "Bảng giá";
+  const heading =
+    language === "en"
+      ? "Clear pricing for each goal"
+      : "Giá rõ ràng, dễ chọn theo mục tiêu";
+  const subtitle =
+    language === "en"
+      ? "Start with a smaller plan to build fundamentals, then upgrade as your interview practice increases."
+      : "Bắt đầu với gói nhỏ để luyện nền tảng, sau đó nâng cấp theo tần suất luyện tập và mục tiêu ứng tuyển.";
+
   return (
     <section id="pricing" className="py-24">
       <div className="container">
         <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground mb-4">
-          Bảng giá
+          {label}
         </span>
-        <h2 className="text-heading mb-4 max-w-md">Giá rõ ràng, dễ chọn theo mục tiêu</h2>
+        <h2 className="text-heading mb-4 max-w-md">{heading}</h2>
         <p className="text-body-sm text-muted-foreground mb-14 max-w-2xl">
-          Bắt đầu với gói nhỏ để luyện nền tảng, sau đó nâng cấp theo tần suất luyện tập và mục tiêu ứng tuyển.
+          {subtitle}
         </p>
         <div className="grid md:grid-cols-3 gap-6">
           {plans.map((plan) => (

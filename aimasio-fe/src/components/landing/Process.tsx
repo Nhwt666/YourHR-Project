@@ -1,4 +1,6 @@
-const steps = [
+import { useLanguage } from "@/i18n/LanguageContext";
+
+const stepsVi = [
   {
     number: "01",
     title: "Chọn hồ sơ phỏng vấn",
@@ -17,16 +19,49 @@ const steps = [
 ];
 
 const Process = () => {
+  const { language } = useLanguage();
+
+  const steps =
+    language === "en"
+      ? [
+          {
+            number: "01",
+            title: "Choose interview profile",
+            description: "Select role and context so AI can generate the right question set.",
+          },
+          {
+            number: "02",
+            title: "Run a live, adaptive interview",
+            description: "Answer in real time while AI adjusts follow‑up questions based on what you say.",
+          },
+          {
+            number: "03",
+            title: "Get instant AI report",
+            description: "See scores, strengths, gaps and actionable recommendations right after the session.",
+          },
+        ]
+      : stepsVi;
+
+  const label = language === "en" ? "How it works" : "Quy trình hoạt động";
+  const heading =
+    language === "en"
+      ? "3 steps to complete a personalised interview"
+      : "3 bước để hoàn thành một buổi phỏng vấn cá nhân hóa";
+  const subtitle =
+    language === "en"
+      ? "A simple flow: choose context, interview, then review a structured AI report."
+      : "Luồng xử lý gọn gàng: chọn bối cảnh, phỏng vấn, nhận báo cáo AI có cấu trúc.";
+
   return (
     <section id="process" className="py-24 bg-gradient-to-b from-background-alt to-background">
       <div className="container">
         <div className="mb-14">
           <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
-            Quy trình hoạt động
+            {label}
           </span>
-          <h2 className="text-heading max-w-2xl">3 bước để hoàn thành một buổi phỏng vấn cá nhân hóa</h2>
+          <h2 className="text-heading max-w-2xl">{heading}</h2>
           <p className="text-body-sm text-muted-foreground mt-3 max-w-xl">
-            Luồng xử lý gọn gàng: chọn bối cảnh, phỏng vấn, nhận báo cáo AI có cấu trúc.
+            {subtitle}
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-6">

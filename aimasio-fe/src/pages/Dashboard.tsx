@@ -1,60 +1,92 @@
 import AppShell from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { PlusCircle, Users, Clock, TrendingUp, ArrowUpRight, Sparkles, FileText } from "lucide-react";
-
-const stats = [
-  { label: "Buổi phỏng vấn đang hoạt động", value: "12", trend: "+18%", icon: Users },
-  { label: "Ứng viên tuần này", value: "48", trend: "+12%", icon: TrendingUp },
-  { label: "Thời gian hoàn thành TB", value: "23 phút", trend: "-9%", icon: Clock },
-];
-
-const recentInterviews = [
-  { role: "Kỹ sư Frontend cấp cao", candidates: 14, status: "Đang mở", date: "28 Thg 2" },
-  { role: "Nhà thiết kế sản phẩm", candidates: 8, status: "Đang mở", date: "26 Thg 2" },
-  { role: "Kỹ sư Backend", candidates: 22, status: "Đã đóng", date: "20 Thg 2" },
-  { role: "Chuyên viên phân tích dữ liệu", candidates: 6, status: "Nháp", date: "18 Thg 2" },
-  { role: "Chuyên viên QA Automation", candidates: 10, status: "Đang mở", date: "16 Thg 2" },
-  { role: "Product Owner", candidates: 5, status: "Đã đóng", date: "12 Thg 2" },
-];
-
-const statusClasses: Record<string, string> = {
-  // Centralized status styling keeps badges visually consistent across rows.
-  "Đang mở": "bg-emerald-50 text-emerald-700 border border-emerald-200",
-  "Đã đóng": "bg-secondary text-muted-foreground border border-border",
-  Nháp: "bg-amber-50 text-amber-700 border border-amber-200",
-};
+import { Link, useNavigate } from "react-router-dom";
+import { FileText, CreditCard, Shield, LogOut } from "lucide-react";
+import { clearStoredToken } from "@/lib/api";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+  const handleSignOutAll = () => {
+    clearStoredToken();
+    localStorage.removeItem("aimasio_user_email");
+    localStorage.removeItem("aimasio_session_id");
+    localStorage.removeItem("aimasio_result");
+    navigate("/");
+  };
+
   return (
     <AppShell>
-      <div className="space-y-8">
+      <div className="space-y-8 max-w-5xl">
         <div className="rounded-2xl border border-border bg-gradient-to-br from-primary/10 via-background to-background p-6 md:p-7">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary">
-                Trung tâm điều phối phỏng vấn
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-2">
+                Quản lý tài khoản YourHR AI
               </span>
-              <h1 className="text-heading">Tổng quan</h1>
-              <p className="text-sm text-muted-foreground mt-1">Theo dõi toàn bộ tiến trình phỏng vấn của bạn.</p>
-              <div className="mt-4 flex items-center gap-2">
-                <Button variant="outline" asChild>
-                  <Link to="/cv-review">
-                    <FileText className="h-4 w-4 mr-2" />
-                    Đánh giá CV
-                  </Link>
-                </Button>
-                <Button asChild className="shadow-sm">
-                  <Link to="/interview-setup">
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Tạo phỏng vấn
-                  </Link>
-                </Button>
-              </div>
+              <h1 className="text-heading">Tài khoản & gói đăng ký</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Xem gói hiện tại, chỉnh sửa thông tin cá nhân và cấu hình thanh toán cho tài khoản của bạn.
+              </p>
             </div>
+          </div>
+        </div>
 
-            <div id="account-section" className="rounded-2xl bg-background/80 border border-border/70 px-4 py-3.5 w-full max-w-sm shadow-sm">
-              <div className="flex items-center gap-3">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          <div className="space-y-6">
+            <section className="rounded-2xl border border-border bg-background p-5 md:p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
+                    Gói của bạn
+                  </p>
+                  <h2 className="mt-1 text-lg font-semibold text-foreground">Gói miễn phí · Cá nhân</h2>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Gia hạn vào ngày <span className="font-medium">07/03/2026</span>. Thanh toán qua{" "}
+                    <span className="font-medium">Visa •••• 4242</span>.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <Button size="sm" className="px-4 h-8">
+                    Quản lý gói
+                  </Button>
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-border bg-background p-5 md:p-6 space-y-1">
+              <h2 className="text-sm font-semibold text-foreground">Tài khoản</h2>
+              <p className="text-xs text-muted-foreground mb-4">
+                Cấu hình thông tin cá nhân và ngôn ngữ hiển thị.
+              </p>
+              <div className="divide-y divide-border text-sm">
+                <div className="flex items-center justify-between py-3">
+                  <div>
+                    <p className="font-medium text-foreground">Chỉnh sửa thông tin cá nhân</p>
+                    <p className="text-xs text-muted-foreground">
+                      Cập nhật tên, email và phòng ban sử dụng YourHR AI.
+                    </p>
+                  </div>
+                  <Button asChild variant="outline" size="sm" className="h-8 px-3 text-xs">
+                    <Link to="/account">Cập nhật</Link>
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between py-3">
+                  <div>
+                    <p className="font-medium text-foreground">Ngôn ngữ & múi giờ</p>
+                    <p className="text-xs text-muted-foreground">Tiếng Việt · GMT+7 (Asia/Ho_Chi_Minh)</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
+                    Thiết lập
+                  </Button>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <aside className="space-y-6">
+            <section className="rounded-2xl border border-border bg-background p-5 md:p-6">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
                   NM
                 </div>
@@ -63,91 +95,97 @@ const Dashboard = () => {
                   <p className="text-xs text-muted-foreground">Talent Acquisition · yourname@yourhr.ai</p>
                 </div>
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
-                <div className="space-y-1">
-                  <p className="text-muted-foreground">Gói hiện tại</p>
-                  <p className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
-                    Standard
-                  </p>
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Gói hiện tại</span>
+                  <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+                    Gói miễn phí
+                  </span>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-muted-foreground">Phòng ban</p>
-                  <p className="text-foreground font-medium">Tech recruitment</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Trạng thái thanh toán</span>
+                  <span className="text-foreground font-medium">Đang hoạt động</span>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-muted-foreground">Vị trí chính</p>
-                  <p className="text-foreground font-medium">Frontend & Product</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-muted-foreground">Lần truy cập gần nhất</p>
-                  <p className="text-foreground font-medium">Hôm qua · 21:34</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Lần đăng nhập gần nhất</span>
+                  <span className="text-foreground font-medium">Hôm qua · 21:34</span>
                 </div>
               </div>
-              <div className="mt-3 flex items-center justify-between border-t border-border/70 pt-3 text-xs">
-                <div className="space-y-0.5">
-                  <p className="text-muted-foreground">Thanh toán</p>
-                  <p className="text-foreground font-medium">Visa •••• 4242 · Gia hạn 12/2026</p>
-                </div>
-                <Button asChild variant="outline" size="sm" className="text-xs h-7 px-3">
-                  <Link to="/account">Cập nhật hồ sơ</Link>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+            </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {stats.map((s) => (
-            <div key={s.label} className="rounded-xl border border-border bg-background p-5 min-h-32 shadow-sm">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary">
-                  <s.icon className="h-4 w-4 text-primary" />
+            <section className="rounded-2xl border border-border bg-background p-5 md:p-6 space-y-3 text-sm">
+              <div className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-primary" />
+                <h2 className="font-semibold text-foreground">Thanh toán</h2>
+              </div>
+              <div className="space-y-3 text-xs">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground">Thẻ thanh toán đã lưu</p>
+                    <p className="text-muted-foreground">Visa •••• 4242 · Hết hạn 12/2026</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
+                    Thay đổi
+                  </Button>
                 </div>
-                <div className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
-                  <Sparkles className="h-3 w-3" />
-                  {s.trend}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-foreground">Lịch sử thanh toán</p>
+                    <p className="text-muted-foreground">3 giao dịch gần nhất trong 90 ngày.</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
+                    Xem chi tiết
+                  </Button>
                 </div>
               </div>
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">{s.label}</span>
-              <div className="mt-2 flex items-center justify-between">
-                <div className="text-2xl font-semibold text-foreground">{s.value}</div>
-                <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
-          ))}
-        </div>
+            </section>
 
-        <div className="rounded-2xl border border-border bg-background overflow-hidden">
-          <div className="px-5 py-4 border-b border-border">
-            <h2 className="text-base font-semibold">Phỏng vấn gần đây</h2>
-            <p className="text-xs text-muted-foreground mt-1">Theo dõi vai trò và hoạt động ứng viên gần đây.</p>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-surface/80">
-                  <th className="text-left py-3 px-5 font-medium text-muted-foreground">Vị trí</th>
-                  <th className="text-left py-3 px-5 font-medium text-muted-foreground">Số ứng viên</th>
-                  <th className="text-left py-3 px-5 font-medium text-muted-foreground">Trạng thái</th>
-                  <th className="text-left py-3 px-5 font-medium text-muted-foreground">Ngay</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentInterviews.map((item) => (
-                  <tr key={item.role} className="border-b border-border last:border-0 hover:bg-surface/70 transition-colors">
-                    <td className="py-3.5 px-5 font-medium text-foreground">{item.role}</td>
-                    <td className="py-3.5 px-5 text-muted-foreground">{item.candidates}</td>
-                    <td className="py-3.5 px-5">
-                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusClasses[item.status]}`}>
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-5 text-muted-foreground">{item.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+            <section className="rounded-2xl border border-border bg-background p-5 md:p-6 space-y-3 text-sm">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-primary" />
+                <h2 className="font-semibold text-foreground">Bảo mật & quyền riêng tư</h2>
+              </div>
+              <div className="space-y-2 text-xs">
+                <div className="flex items-center justify-between py-1.5">
+                  <span className="text-foreground">Đổi mật khẩu</span>
+                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
+                    Thiết lập
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between py-1.5">
+                  <span className="text-foreground">Quản lý ứng dụng đã kết nối</span>
+                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
+                    0 ứng dụng
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between py-1.5">
+                  <span className="text-foreground">Quản lý thông báo</span>
+                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
+                    Email & trình duyệt
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between pt-3 mt-1 border-t border-border/80">
+                  <span className="text-foreground flex items-center gap-2">
+                    <LogOut className="h-3.5 w-3.5" />
+                    Đăng xuất ở mọi nơi
+                  </span>
+                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs" onClick={handleSignOutAll}>
+                    Đăng xuất
+                  </Button>
+                </div>
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-dashed border-border bg-background/60 p-5 md:p-6 text-xs text-muted-foreground">
+              <div className="flex items-center justify-between mb-2">
+                <div className="font-semibold text-foreground text-sm">Dữ liệu & quyền truy cập</div>
+              </div>
+              <p>
+                Bạn có thể yêu cầu trích xuất dữ liệu buổi phỏng vấn hoặc xoá hoàn toàn tài khoản theo quy định bảo vệ
+                dữ liệu cá nhân. Tính năng này sẽ được bổ sung trong các bản cập nhật tiếp theo.
+              </p>
+            </section>
+          </aside>
         </div>
       </div>
     </AppShell>

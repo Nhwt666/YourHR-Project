@@ -42,18 +42,10 @@ const CvReview = () => {
         <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-3">
           Đánh giá CV miễn phí
         </div>
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="text-heading">Đánh giá CV</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Tải CV lên và nhận đánh giá thực tế từ AI: điểm số, điểm mạnh, khoảng thiếu và hướng cải thiện.
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-background/80 px-4 py-3">
-            <p className="text-xs text-muted-foreground">Vận hành bởi</p>
-            <p className="text-sm font-semibold">Công cụ phân tích YourHR AI</p>
-          </div>
-        </div>
+        <h1 className="text-heading">Đánh giá CV</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Tải CV lên và nhận đánh giá thực tế từ AI: điểm số, điểm mạnh, khoảng thiếu và hướng cải thiện.
+        </p>
       </div>
 
       <div className="mb-6 grid gap-3 md:grid-cols-3">

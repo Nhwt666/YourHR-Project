@@ -4,8 +4,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useLanguage } from "@/i18n/LanguageContext";
 
-const faqs = [
+const faqsVi = [
   {
     q: "AI chấm điểm như thế nào?",
     a: "Hệ thống AI chấm điểm theo tiêu chí bạn chọn, phân tích độ liên quan nội dung, khả năng diễn đạt và năng lực theo vai trò.",
@@ -29,18 +30,35 @@ const faqs = [
 ];
 
 const FAQ = () => {
+  const { language } = useLanguage();
+  const faqs = faqsVi;
+
+  const label = language === "en" ? "FAQ" : "Hỏi đáp";
+  const heading =
+    language === "en" ? "Frequently asked questions" : "Câu hỏi thường gặp";
+  const subtitle =
+    language === "en"
+      ? "Key information about how YourHR AI works."
+      : "Tất cả thông tin quan trọng về YourHR AI.";
+
   return (
     <section id="faq" className="py-24 bg-background-alt">
       <div className="container">
         <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground mb-4">
-          Hỏi đáp
+          {label}
         </span>
-        <h2 className="text-heading mb-4">Câu hỏi thường gặp</h2>
-        <p className="text-body-sm text-muted-foreground mb-12 max-w-md">Tất cả thông tin quan trọng về YourHR AI.</p>
+        <h2 className="text-heading mb-4">{heading}</h2>
+        <p className="text-body-sm text-muted-foreground mb-12 max-w-md">
+          {subtitle}
+        </p>
         <div className="max-w-2xl">
           <Accordion type="single" collapsible className="space-y-2">
             {faqs.map((faq, i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="border border-border rounded-lg px-6 bg-background">
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="border border-border rounded-lg px-6 bg-background"
+              >
                 <AccordionTrigger className="text-body-sm font-medium text-foreground hover:no-underline py-4">
                   {faq.q}
                 </AccordionTrigger>
@@ -57,3 +75,4 @@ const FAQ = () => {
 };
 
 export default FAQ;
+

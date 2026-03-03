@@ -1,14 +1,37 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, Menu, Moon, Sun, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { clearStoredToken, getStoredToken } from "@/lib/api";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const { language, setLanguage } = useLanguage();
   // Read login state from local token to switch CTA actions.
   const isAuthenticated = Boolean(getStoredToken());
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("yourhr_theme");
+    if (saved === "dark" || saved === "light") {
+      setTheme(saved);
+      if (saved === "dark") {
+        document.documentElement.classList.add("dark");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    window.localStorage.setItem("yourhr_theme", theme);
+  }, [theme]);
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -57,7 +80,7 @@ const Navbar = () => {
   };
 
   const handleAvatarClick = () => {
-    navigate("/account");
+    navigate("/dashboard");
   };
 
   return (
@@ -76,39 +99,104 @@ const Navbar = () => {
               onClick={handlePrimaryNav}
               className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
             >
-              Luyện CV & phỏng vấn
+              {language === "en" ? "Practice CV & interviews" : "Luyện CV & phỏng vấn"}
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("benefits")}
               className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
             >
-              Lợi ích
+              {language === "en" ? "Benefits" : "Lợi ích"}
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("process")}
               className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
             >
-              Quy trình
+              {language === "en" ? "How it works" : "Quy trình"}
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("pricing")}
               className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
             >
-              Bảng giá
+              {language === "en" ? "Pricing" : "Bảng giá"}
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("faq")}
               className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
             >
-              Hỏi đáp
+              {language === "en" ? "FAQ" : "Hỏi đáp"}
             </button>
           </div>
         </div>
         <div className="hidden md:flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border/80 bg-background px-3 text-xs font-medium text-muted-foreground hover:bg-surface"
+          >
+            {theme === "light" ? (
+              <>
+                <Moon className="h-3.5 w-3.5 text-primary" />
+                <span>{language === "en" ? "Dark mode" : "Dark mode"}</span>
+              </>
+            ) : (
+              <>
+                <Sun className="h-3.5 w-3.5 text-amber-400" />
+                <span>{language === "en" ? "Light mode" : "Light mode"}</span>
+              </>
+            )}
+          </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setLanguageOpen((open) => !open)}
+              className="inline-flex h-8 items-center gap-1 rounded-full border border-border/80 bg-background px-3 text-xs font-medium text-muted-foreground hover:bg-surface"
+            >
+              <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-primary/10 text-[10px] font-semibold text-primary">
+                {language === "vi" ? "VN" : language === "en" ? "EN" : "JP"}
+              </span>
+              <span>
+                {language === "vi" ? "Tiếng Việt" : language === "en" ? "English" : "日本語"}
+              </span>
+            </button>
+            {languageOpen && (
+              <div className="absolute right-0 mt-2 w-40 rounded-md border border-border bg-background shadow-lg text-xs py-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLanguage("vi");
+                    setLanguageOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-surface text-foreground"
+                >
+                  🇻🇳 Tiếng Việt
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLanguage("en");
+                    setLanguageOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-surface text-foreground"
+                >
+                  🇺🇸 English
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLanguage("jp");
+                    setLanguageOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-surface text-foreground"
+                >
+                  🇯🇵 日本語
+                </button>
+              </div>
+            )}
+          </div>
           {isAuthenticated ? (
             <>
               <button
@@ -118,9 +206,6 @@ const Navbar = () => {
               >
                 NM
               </button>
-              <Button size="sm" variant="outline" className="border-border/80" onClick={handleSignOut}>
-                Đăng xuất
-              </Button>
             </>
           ) : (
             <Button
@@ -129,7 +214,7 @@ const Navbar = () => {
               asChild
             >
               <Link to="/auth">
-                Đăng nhập
+                {language === "en" ? "Sign in" : "Đăng nhập"}
                 <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </Link>
             </Button>
@@ -152,7 +237,7 @@ const Navbar = () => {
             }}
             className="block text-left w-full text-sm text-muted-foreground hover:text-foreground"
           >
-            Luyện CV & phỏng vấn
+            {language === "en" ? "Practice CV & interviews" : "Luyện CV & phỏng vấn"}
           </button>
           <button
             type="button"
@@ -162,7 +247,7 @@ const Navbar = () => {
             }}
             className="block text-left w-full text-sm text-muted-foreground hover:text-foreground"
           >
-            Lợi ích
+            {language === "en" ? "Benefits" : "Lợi ích"}
           </button>
           <button
             type="button"
@@ -172,7 +257,7 @@ const Navbar = () => {
             }}
             className="block text-left w-full text-sm text-muted-foreground hover:text-foreground"
           >
-            Quy trình
+            {language === "en" ? "How it works" : "Quy trình"}
           </button>
           <button
             type="button"
@@ -182,7 +267,7 @@ const Navbar = () => {
             }}
             className="block text-left w-full text-sm text-muted-foreground hover:text-foreground"
           >
-            Bảng giá
+            {language === "en" ? "Pricing" : "Bảng giá"}
           </button>
           <button
             type="button"
@@ -192,25 +277,20 @@ const Navbar = () => {
             }}
             className="block text-left w-full text-sm text-muted-foreground hover:text-foreground"
           >
-            Hỏi đáp
+            {language === "en" ? "FAQ" : "Hỏi đáp"}
           </button>
           <div className="pt-3 border-t border-border flex flex-col gap-2">
             {isAuthenticated ? (
-              <>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    handleAvatarClick();
-                    setMobileOpen(false);
-                  }}
-                >
-                  Hồ sơ cá nhân
-                </Button>
-                <Button size="sm" variant="outline" onClick={handleSignOut}>
-                  Đăng xuất
-                </Button>
-              </>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  handleAvatarClick();
+                  setMobileOpen(false);
+                }}
+              >
+                Hồ sơ cá nhân
+              </Button>
             ) : (
               <>
                 <Button variant="ghost" size="sm" asChild><Link to="/auth">Đăng nhập</Link></Button>

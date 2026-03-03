@@ -1,6 +1,7 @@
 import { Zap, BarChart3, Shield, Activity } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 
-const benefits = [
+const benefitsVi = [
   {
     icon: Zap,
     title: "Phỏng vấn cá nhân hóa chỉ trong vài phút",
@@ -23,16 +24,57 @@ const benefits = [
   },
 ];
 
+const benefitsEn = [
+  {
+    icon: Zap,
+    title: "Personalised interviews in minutes",
+    description: "YourHR AI adapts questions to role, level and your answers so each session feels like a real interview.",
+  },
+  {
+    icon: BarChart3,
+    title: "Clear, structured signals",
+    description: "Get structured scorecards with strengths, gaps and next steps instead of vague comments.",
+  },
+  {
+    icon: Shield,
+    title: "Fair and consistent evaluation",
+    description: "Transparent criteria and consistent scoring help reduce bias across all interview sessions.",
+  },
+  {
+    icon: Activity,
+    title: "Behavior & expression analysis",
+    description: "Track voice and facial cues and simulate controlled pressure to see how candidates respond.",
+  },
+];
+
 const Benefits = () => {
+  const { language } = useLanguage();
+  const benefits = language === "en" ? benefitsEn : benefitsVi;
+
+  const sectionTitle =
+    language === "en"
+      ? "Why candidates and hiring teams choose YourHR AI"
+      : "Vì sao ứng viên và nhà tuyển dụng chọn YourHR AI";
+
+  const heading =
+    language === "en"
+      ? "Built for personalised interviews"
+      : "Xây dựng cho phỏng vấn cá nhân hóa";
+
+  const subtitle =
+    language === "en"
+      ? "Ask sharper questions. Capture better signals. Decide faster."
+      : "Đặt câu hỏi sát hơn. Thu được tín hiệu tốt hơn. Ra quyết định nhanh hơn.";
+
   return (
     <section id="benefits" className="py-24">
       <div className="container">
         <span className="inline-block text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground mb-4">
-          Vì sao ứng viên và nhà tuyển dụng chọn YourHR AI
+          {sectionTitle}
         </span>
-        <h2 className="text-heading mb-3 max-w-2xl">Xây dựng cho phỏng vấn cá nhân hóa</h2>
+        <h2 className="text-heading mb-3 max-w-2xl">{heading}</h2>
         <p className="mb-14 max-w-2xl text-body-sm text-muted-foreground">
-          Đặt câu hỏi sát hơn. Thu được tín hiệu tốt hơn. Ra quyết định nhanh hơn.
+          {subtitle}
         </p>
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {benefits.map((b) => (

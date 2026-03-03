@@ -57,7 +57,7 @@ const Account = () => {
               <h2 className="text-sm font-semibold text-foreground">Thanh toán & ghi chú</h2>
               <div>
                 <Label htmlFor="plan">Gói hiện tại</Label>
-                <Input id="plan" className="mt-1.5" defaultValue="Standard" />
+                <Input id="plan" className="mt-1.5" defaultValue="Gói miễn phí" />
               </div>
               <div>
                 <Label htmlFor="card">Thẻ thanh toán</Label>
