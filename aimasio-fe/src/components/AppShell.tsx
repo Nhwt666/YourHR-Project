@@ -39,8 +39,8 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-72 shrink-0 flex-col border-r border-border bg-surface/95 px-5 py-6">
+      {/* Desktop sidebar — fixed so it stays at top when scrolling main content */}
+      <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-72 shrink-0 flex-col border-r border-border bg-surface/95 px-5 py-6 z-40">
         <Link to="/" className="mb-10 inline-flex items-center gap-2 px-1">
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary text-xs font-bold">
             AI
@@ -92,8 +92,8 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
         </nav>
       </aside>
 
-      {/* Main content + mobile nav */}
-      <main className="flex-1 overflow-auto bg-background-alt/30">
+      {/* Main content + mobile nav — ml for fixed sidebar width so content is not under sidebar */}
+      <main className="flex-1 md:ml-72 overflow-auto bg-background-alt/30">
         <div className="w-full max-w-6xl mx-auto p-4 pb-8 lg:p-10">
           {/* Mobile top nav */}
           <div className="mb-4 flex items-center justify-between md:hidden">

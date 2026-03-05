@@ -64,7 +64,9 @@ const Auth = () => {
     try {
       setLoading(true);
       await registerUser(email, password);
-      setStatus("Đăng ký thành công. Bạn có thể đăng nhập ngay.");
+      // Tự đăng nhập sau khi đăng ký thành công để vào thẳng trang web
+      await loginUser(email, password);
+      navigate("/dashboard");
     } catch (error) {
       setStatus(getReadableError(error));
     } finally {
@@ -95,7 +97,7 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background-alt/40 via-background to-background-alt/60">
       <Navbar />
-      <div className="container mx-auto flex min-h-[calc(100vh-72px)] items-center px-4 py-10">
+      <div className="pt-[72px] container mx-auto flex min-h-[calc(100vh-72px)] items-center px-4 py-10">
         <div className="grid w-full items-center gap-12 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           <div className="space-y-6 max-w-xl mx-auto lg:mx-0">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary">

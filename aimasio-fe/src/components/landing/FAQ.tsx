@@ -16,12 +16,12 @@ const faqsVi = [
     a: "Nền tảng theo dõi thời gian, độ nhất quán câu trả lời và đánh dấu hành vi bất thường để bạn kiểm tra lại.",
   },
   {
-    q: "Có kết nối với ATS không?",
-    a: "Có. Hệ thống hỗ trợ kết nối với các nền tảng ATS phổ biến và có thể mở rộng theo nhu cầu.",
+    q: "Có kết nối với phần mềm quản lý hồ sơ ứng viên không?",
+    a: "Có. YourHR AI có thể tích hợp với các phần mềm quản lý tuyển dụng phổ biến và mở rộng theo nhu cầu.",
   },
   {
-    q: "Sau khi hết dùng thử thì sao?",
-    a: "Bạn chọn gói phù hợp để tiếp tục. Dữ liệu phỏng vấn và kết quả vẫn được giữ nguyên.",
+    q: "Cách tính phí và dùng thử?",
+    a: "Không dùng gói. Bạn mua theo lượt: 39.000đ/lượt đánh giá & chỉnh sửa CV, 99.000đ/lượt tạo phòng phỏng vấn. User đăng ký mới được tặng 1 lần đánh giá và chỉnh sửa CV miễn phí.",
   },
   {
     q: "Dữ liệu ứng viên có an toàn không?",
@@ -29,9 +29,32 @@ const faqsVi = [
   },
 ];
 
+const faqsEn = [
+  {
+    q: "How does the AI score?",
+    a: "The AI scores against your chosen criteria, analysing relevance, clarity of expression and fit for the role.",
+  },
+  {
+    q: "Can candidates cheat?",
+    a: "The platform tracks timing, answer consistency and flags unusual behaviour for you to review.",
+  },
+  {
+    q: "Can it connect to applicant/candidate management software?",
+    a: "Yes. YourHR AI can integrate with common recruitment management tools and be extended as needed.",
+  },
+  {
+    q: "How is pricing and free trial?",
+    a: "No plans—pay per use: 39,000 VND per CV review & edit, 99,000 VND per interview room. New sign-ups get 1 free CV review and edit.",
+  },
+  {
+    q: "Is candidate data safe?",
+    a: "Data is encrypted in transit and at rest. You can configure retention and deletion policies.",
+  },
+];
+
 const FAQ = () => {
   const { language } = useLanguage();
-  const faqs = faqsVi;
+  const faqs = language === "en" ? faqsEn : faqsVi;
 
   const label = language === "en" ? "FAQ" : "Hỏi đáp";
   const heading =

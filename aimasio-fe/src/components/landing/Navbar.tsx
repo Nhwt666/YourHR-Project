@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Menu, Moon, Sun, X } from "lucide-react";
+import { ArrowRight, Bell, Menu, Moon, Sun, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { clearStoredToken, getStoredToken } from "@/lib/api";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -84,7 +84,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/60 bg-gradient-to-b from-background via-background/95 to-background/90 backdrop-blur-md shadow-[0_18px_50px_-28px_rgba(15,23,42,0.65)]">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/60 bg-gradient-to-b from-background via-background/95 to-background/90 backdrop-blur-md shadow-[0_18px_50px_-28px_rgba(15,23,42,0.65)]">
       <div className="container flex h-[72px] items-center justify-between">
         <div className="flex items-center gap-8">
           <Link to="/" className="inline-flex items-center gap-2.5 hover:opacity-90 transition-opacity">
@@ -99,7 +99,7 @@ const Navbar = () => {
               onClick={handlePrimaryNav}
               className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
             >
-              {language === "en" ? "Practice CV & interviews" : "Luyện CV & phỏng vấn"}
+              {language === "en" ? "Features" : "Chức năng"}
             </button>
             <button
               type="button"
@@ -206,6 +206,13 @@ const Navbar = () => {
               >
                 NM
               </button>
+              <button
+                type="button"
+                aria-label={language === "en" ? "Notifications" : "Thông báo"}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/80 bg-background text-muted-foreground hover:bg-surface hover:text-foreground transition-colors"
+              >
+                <Bell className="h-4 w-4" />
+              </button>
             </>
           ) : (
             <Button
@@ -237,7 +244,7 @@ const Navbar = () => {
             }}
             className="block text-left w-full text-sm text-muted-foreground hover:text-foreground"
           >
-            {language === "en" ? "Practice CV & interviews" : "Luyện CV & phỏng vấn"}
+            {language === "en" ? "Features" : "Chức năng"}
           </button>
           <button
             type="button"

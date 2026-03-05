@@ -18,7 +18,7 @@ const Footer = () => {
   const productTitle = language === "en" ? "Product" : "Sản phẩm";
   const companyTitle = language === "en" ? "Company" : "Công ty";
   const practiceLink =
-    language === "en" ? "Practice CV & interviews" : "Luyện CV & phỏng vấn";
+    language === "en" ? "Features" : "Chức năng";
   const pricingLink = language === "en" ? "Pricing" : "Bảng giá";
   const aboutLink = language === "en" ? "About" : "Giới thiệu";
   const privacyLink = language === "en" ? "Privacy" : "Bảo mật";

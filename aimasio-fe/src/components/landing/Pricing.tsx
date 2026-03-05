@@ -5,44 +5,34 @@ import { useLanguage } from "@/i18n/LanguageContext";
 
 const plansVi = [
   {
-    name: "Starter",
-    price: "169.000đ",
-    period: "/tuần",
-    description: "Phù hợp cho sinh viên và ứng viên mới luyện phỏng vấn.",
-    features: ["8 phiên phỏng vấn/tuần", "Luyện trước 1-2 vòng phỏng vấn quan trọng", "Chấm điểm AI cơ bản và gợi ý cải thiện", "Hỗ trợ qua email"],
-    cta: "Bắt đầu với Starter",
+    name: "Review & chỉnh sửa CV",
+    price: "39.000đ",
+    period: "/lượt",
+    description: "Gửi CV của bạn để AI phân tích, chấm điểm và gợi ý chỉnh sửa chi tiết.",
+    features: [
+      "Đánh giá cấu trúc, nội dung và mức độ rõ ràng của CV",
+      "Nhận gợi ý câu chữ cụ thể để tăng sức thuyết phục",
+      "Highlight điểm mạnh và khoảng thiếu trong kinh nghiệm",
+      "Xuất bản tóm tắt CV gọn gàng, dễ đọc cho nhà tuyển dụng",
+    ],
+    cta: "Đánh giá & chỉnh sửa CV",
     featured: false,
   },
   {
-    name: "Standard",
-    price: "399.000đ",
-    period: "/tháng",
-    description: "Gói bán chính cho luyện tập đều đặn và theo dõi tiến bộ.",
+    name: "Tạo phòng phỏng vấn",
+    price: "99.000đ",
+    period: "/lượt",
+    description:
+      "Tạo một phòng phỏng vấn mô phỏng chuyên nghiệp, với các tuỳ chọn linh hoạt do chính bạn chọn.",
     features: [
-      "50 phiên phỏng vấn/tháng",
-      "Ngân hàng câu hỏi theo vai trò và cấp độ",
-      "Theo dõi điểm và tiến độ theo tuần",
-      "Đánh giá CV và gợi ý nâng cấp",
-      "Hỗ trợ ưu tiên",
+      "Tạo một cuộc phỏng vấn với các tuỳ chọn vai trò, cấp độ và phong cách hỏi riêng cho bạn",
+      "Hệ thống chấm điểm rõ ràng theo nhiều tiêu chí: kỹ thuật, giao tiếp, giải quyết vấn đề, phù hợp văn hoá",
+      "Báo cáo phân tích mang tính cá nhân hoá: điểm mạnh, điểm trừ và các ví dụ cụ thể",
+      "Đề xuất mục tiêu luyện tập tiếp theo để cải thiện điểm yếu và phát huy tiềm năng",
+      "Lưu lại lịch sử để theo dõi tiến bộ giữa các buổi phỏng vấn",
     ],
-    cta: "Chọn Standard",
+    cta: "Tạo phòng phỏng vấn",
     featured: true,
-  },
-  {
-    name: "Premium",
-    price: "699.000đ",
-    period: "/tháng",
-    description: "Dành cho người luyện gấp và ứng tuyển nhiều công ty cùng lúc.",
-    features: [
-      "100 phiên phỏng vấn/tháng",
-      "Lộ trình phỏng vấn cá nhân hóa",
-      "Follow-up thích ứng theo điểm yếu",
-      "Báo cáo sẵn sàng hàng tuần",
-      "Chế độ luyện tập hướng offer",
-      "Hỗ trợ nhanh nhất",
-    ],
-    cta: "Chọn Premium",
-    featured: false,
   },
 ];
 
@@ -53,12 +43,12 @@ const Pricing = () => {
   const label = language === "en" ? "Pricing" : "Bảng giá";
   const heading =
     language === "en"
-      ? "Clear pricing for each goal"
-      : "Giá rõ ràng, dễ chọn theo mục tiêu";
+      ? "Clear pricing for each action"
+      : "Giá rõ ràng cho từng lượt sử dụng";
   const subtitle =
     language === "en"
-      ? "Start with a smaller plan to build fundamentals, then upgrade as your interview practice increases."
-      : "Bắt đầu với gói nhỏ để luyện nền tảng, sau đó nâng cấp theo tần suất luyện tập và mục tiêu ứng tuyển.";
+      ? "Optimize your CV and practice interviews with AI whenever you need. Simple, transparent and easy to start."
+      : "Tối ưu CV và luyện phỏng vấn với AI theo nhu cầu của bạn. Đơn giản, minh bạch và dễ bắt đầu.";
 
   return (
     <section id="pricing" className="py-24">
@@ -70,7 +60,7 @@ const Pricing = () => {
         <p className="text-body-sm text-muted-foreground mb-14 max-w-2xl">
           {subtitle}
         </p>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 gap-6">
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -82,11 +72,6 @@ const Pricing = () => {
             >
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="text-subheading">{plan.name}</h3>
-                {plan.featured && (
-                  <span className="inline-flex items-center rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-primary">
-                    Gói phổ biến
-                  </span>
-                )}
               </div>
               <div className="flex items-baseline gap-1 mb-3">
                 <span className="text-4xl font-bold text-foreground tracking-tight">{plan.price}</span>
@@ -98,7 +83,9 @@ const Pricing = () => {
                 className="w-full mb-6"
                 asChild
               >
-                <Link to="/dashboard">{plan.cta}</Link>
+                <Link to={plan.name === "Review & chỉnh sửa CV" ? "/cv-review" : "/interview-setup"}>
+                  {plan.cta}
+                </Link>
               </Button>
               <ul className="space-y-3">
                 {plan.features.map((f) => (

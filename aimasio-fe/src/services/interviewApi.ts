@@ -59,8 +59,15 @@ export type AvatarStreamInitResponse = {
   ice_servers: DIdIceServer[];
 };
 
-export const registerUser = async (email: string, password: string) => {
-  await apiFetch("/Auth/register", {
+/** Response from BE POST /Auth/register (PascalCase as serialized by .NET) */
+export type RegisterResponse = {
+  UserId: string;
+  Email: string;
+  Message: string;
+};
+
+export const registerUser = async (email: string, password: string): Promise<RegisterResponse> => {
+  return apiFetch<RegisterResponse>("/Auth/register", {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });

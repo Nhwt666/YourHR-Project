@@ -8,8 +8,8 @@ const Hero = () => {
 
   const heading =
     language === "en"
-      ? "Interview smarter with AI"
-      : "Phỏng vấn thông minh hơn cùng AI";
+      ? "Interview smart with AI"
+      : "Phỏng vấn thông minh cùng AI";
 
   const subheading =
     language === "en"

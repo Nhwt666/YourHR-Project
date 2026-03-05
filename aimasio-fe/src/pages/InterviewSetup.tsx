@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Crown, FileUp, Lock, WandSparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { startInterview } from "@/services/interviewApi";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const roleOptions = [
   "Front End - FPT Software",
@@ -27,12 +27,6 @@ const roleOptions = [
   "DevOps - CI/CD cơ bản",
 ];
 
-const interviewStyles = [
-  "Sàng lọc tổng quan",
-  "Đào sâu kỹ thuật",
-  "Hành vi + phù hợp văn hóa",
-];
-
 const experienceLevels = [
   "Intern/Fresher",
   "Junior (1-2 năm)",
@@ -45,13 +39,40 @@ const InterviewSetup = () => {
   const { language } = useLanguage();
   const [role, setRole] = useState(roleOptions[0]);
   const [description, setDescription] = useState("");
-  const [style, setStyle] = useState(interviewStyles[0]);
+  const [styleTech, setStyleTech] = useState(true);
+  const [styleBehavior, setStyleBehavior] = useState(true);
+  const [styleScreening, setStyleScreening] = useState(true);
+  const [deepDiveEnabled, setDeepDiveEnabled] = useState(false);
+  const [uploadedCvName, setUploadedCvName] = useState<string | null>(null);
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const [experience, setExperience] = useState(experienceLevels[1]);
   const [status, setStatus] = useState("");
   const [loadingCreate, setLoadingCreate] = useState(false);
   const [advancedStatus, setAdvancedStatus] = useState("");
+  const [hasCvFromReview, setHasCvFromReview] = useState(false);
+
+  useEffect(() => {
+    try {
+      const flag = localStorage.getItem("aimasio_use_cv_for_interview");
+      if (flag === "1") {
+        setHasCvFromReview(true);
+        localStorage.removeItem("aimasio_use_cv_for_interview");
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const handleCreateInterview = async () => {
+    if (!styleTech && !styleBehavior && !styleScreening) {
+      setStatus(
+        language === "en"
+          ? "Choose at least one interview style (technical, behavioural or screening)."
+          : "Vui lòng chọn ít nhất một kiểu phỏng vấn (kỹ thuật, hành vi hoặc sàng lọc).",
+      );
+      return;
+    }
+
     if (!role.trim()) {
       setStatus(
         language === "en"
@@ -61,28 +82,19 @@ const InterviewSetup = () => {
       return;
     }
 
-    try {
-      setLoadingCreate(true);
-      // Send selected track + optional context so BE can generate role-specific questions.
-      const jobRole = description.trim()
-        ? `${role.trim()} | Context: ${description.trim()}`
-        : role.trim();
-      const result = await startInterview(jobRole);
-      // Keep session in storage so live/results pages can load after route changes.
-      localStorage.setItem("aimasio_session_id", result.sessionId);
-      localStorage.setItem("aimasio_role", role.trim());
-      navigate("/live-interview");
-    } catch (error) {
-      setStatus(
-        error instanceof Error
-          ? error.message
-          : language === "en"
-            ? "Failed to create interview session."
-            : "Tạo buổi phỏng vấn thất bại.",
-      );
-    } finally {
-      setLoadingCreate(false);
-    }
+    setStatus("");
+    navigate("/interview-payment", {
+      state: {
+        from: "interview-setup",
+        role: role.trim(),
+        description: description.trim(),
+        styles: {
+          technical: styleTech,
+          behavioural: styleBehavior,
+          screening: styleScreening,
+        },
+      },
+    });
   };
 
   return (
@@ -96,23 +108,9 @@ const InterviewSetup = () => {
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           {language === "en"
-            ? "Choose a role and YourHR AI will automatically generate the question set."
-            : "Chọn vai trò, sau đó YourHR AI sẽ tạo bộ câu hỏi tự động."}
+            ? "Choose a role and YourHR AI will automatically generate the question set for this paid interview."
+            : "Chọn vai trò, sau đó YourHR AI sẽ tạo bộ câu hỏi tự động cho từng lượt phỏng vấn đã thanh toán."}
         </p>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-surface px-4 py-3">
-          <div>
-            <p className="text-xs text-muted-foreground">
-              {language === "en" ? "Current plan" : "Gói hiện tại"}
-            </p>
-            <p className="text-sm font-semibold">
-              {language === "en" ? "Standard plan" : "Gói Standard"}
-            </p>
-          </div>
-          <Button variant="outline" size="sm">
-            <Crown className="mr-1.5 h-4 w-4" />
-            {language === "en" ? "Manage Standard features" : "Quản lý tính năng Standard"}
-          </Button>
-        </div>
       </div>
 
       <div className="space-y-6 max-w-4xl">
@@ -161,30 +159,37 @@ const InterviewSetup = () => {
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-2xl border border-border bg-background p-5">
-            <Label htmlFor="style" className="text-sm font-medium">
-              {language === "en" ? "Interview style" : "Kiểu phỏng vấn"}
+            <Label className="text-sm font-medium">
+              {language === "en" ? "Design your own interview" : "THIẾT KẾ BUỔI PHỎNG VẤN RIÊNG BẠN"}
             </Label>
-            <Select value={style} onValueChange={setStyle}>
-              <SelectTrigger id="style" className="mt-1.5">
-                <SelectValue
-                  placeholder={
-                    language === "en" ? "Choose interview style" : "Chọn kiểu phỏng vấn"
-                  }
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {interviewStyles.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="mt-2 text-xs text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground">
               {language === "en"
-                ? "UI-only option. Backend interview flow stays unchanged."
-                : "Tùy chọn giao diện. Luồng xử lý backend hiện tại không thay đổi."}
+                ? "Combine different interview styles for this session. A complete interview usually mixes technical, behavioural and quick screening questions."
+                : "Kết hợp các kiểu phỏng vấn khác nhau cho phiên này. Một buổi phỏng vấn hoàn chỉnh thường gồm câu hỏi kỹ thuật, hành vi và sàng lọc nhanh."}
             </p>
+            <div className="mt-3 space-y-2 text-sm">
+              <label className="flex items-center gap-2">
+                <Checkbox
+                  checked={styleTech}
+                  onCheckedChange={(v) => setStyleTech(Boolean(v))}
+                />
+                <span>{language === "en" ? "Technical interview" : "Phỏng vấn kỹ thuật"}</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <Checkbox
+                  checked={styleBehavior}
+                  onCheckedChange={(v) => setStyleBehavior(Boolean(v))}
+                />
+                <span>{language === "en" ? "Behavioural interview" : "Phỏng vấn hành vi"}</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <Checkbox
+                  checked={styleScreening}
+                  onCheckedChange={(v) => setStyleScreening(Boolean(v))}
+                />
+                <span>{language === "en" ? "Screening interview" : "Phỏng vấn sàng lọc"}</span>
+              </label>
+            </div>
           </div>
 
           <div className="rounded-2xl border border-border bg-background p-5">
@@ -220,12 +225,9 @@ const InterviewSetup = () => {
             <div className="flex items-center gap-2">
               <Lock className="h-4 w-4 text-muted-foreground" />
               <h2 className="text-base font-semibold">
-                {language === "en" ? "Standard+ features" : "Tính năng Standard+"}
+                {language === "en" ? "Advanced features" : "Tính năng nâng cao"}
               </h2>
             </div>
-            <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary">
-              Xem trước
-            </span>
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -236,78 +238,66 @@ const InterviewSetup = () => {
                   : "Nhập CV để AI cá nhân hóa phỏng vấn"}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {language === "en"
-                  ? "AI generates questions based on strengths, gaps and experience in your CV."
-                  : "AI tạo câu hỏi dựa trên điểm mạnh, khoảng thiếu và kinh nghiệm trong CV."}
+                {hasCvFromReview
+                  ? language === "en"
+                    ? "Using the CV from your latest review so AI can generate more personalised questions."
+                    : "Sử dụng CV vừa được đánh giá gần nhất để AI tạo bộ câu hỏi cá nhân hoá hơn."
+                  : language === "en"
+                    ? "Upload a CV file (PDF) so AI can later personalise questions for this candidate."
+                    : "Chọn một file CV (PDF) để AI có thể cá nhân hoá câu hỏi cho ứng viên về sau."}
               </p>
-              <div className="mt-3">
+              <div className="mt-3 flex items-center gap-3">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    setAdvancedStatus(
-                      language === "en"
-                        ? "CV-based personalised interview is enabled for this Standard account (demo only)."
-                        : "Chế độ phỏng vấn cá nhân hóa theo CV đã được bật cho tài khoản Standard này (demo UI).",
-                    )
-                  }
+                  type="button"
+                  onClick={() => uploadInputRef.current?.click()}
                 >
                   <FileUp className="mr-1.5 h-4 w-4" />
                   {language === "en" ? "Upload CV" : "Tải CV"}
                 </Button>
+                {uploadedCvName ? (
+                  <span className="text-xs text-muted-foreground truncate max-w-[180px]">
+                    {uploadedCvName}
+                  </span>
+                ) : null}
+                <input
+                  ref={uploadInputRef}
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setUploadedCvName(file.name);
+                  }}
+                />
               </div>
             </div>
 
             <div className="rounded-xl border border-border p-3">
               <p className="text-sm font-medium">
-                {language === "en" ? "Adaptive follow-up questions" : "Follow-up đào sâu thích ứng"}
+                {language === "en" ? "Deep‑dive follow‑up mode" : "Chế độ hỏi sâu"}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {language === "en"
-                  ? "AI asks follow-up questions based on each answer and your confidence level."
-                  : "AI đặt câu hỏi tiếp theo dựa trên từng câu trả lời và mức độ tự tin."}
+                  ? "AI adds extra follow‑up questions based on your answers to dig deeper into your experience and thinking."
+                  : "AI sẽ đặt thêm các câu hỏi liên quan dựa trên câu trả lời của bạn để đào sâu vào kinh nghiệm và cách suy nghĩ."}
               </p>
               <div className="mt-3">
                 <Button
-                  variant="outline"
+                  variant={deepDiveEnabled ? "default" : "outline"}
                   size="sm"
-                  onClick={() =>
-                    setAdvancedStatus(
-                      language === "en"
-                        ? "Interview duration is currently set to a default length; in the upgraded version you can pick 15, 30, 45, 60 minutes or a custom length (demo UI only)."
-                        : "Thời lượng buổi phỏng vấn hiện đang ở mức mặc định; ở phiên bản nâng cấp bạn có thể chọn 15, 30, 45, 60 phút hoặc tuỳ chỉnh (UI demo).",
-                    )
-                  }
+                  className={deepDiveEnabled ? "bg-emerald-600 hover:bg-emerald-500 text-white" : ""}
+                  type="button"
+                  onClick={() => setDeepDiveEnabled((prev) => !prev)}
                 >
-                  {language === "en" ? "Enable deep dive" : "Bật chế độ đào sâu"}
-                </Button>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-border p-3 md:col-span-2">
-              <p className="text-sm font-medium">
-                {language === "en"
-                  ? "Planned interview duration"
-                  : "Thời lượng buổi phỏng vấn"}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {language === "en"
-                  ? "Choose default or custom durations like 15, 30, 45, 60 minutes for each practice session."
-                  : "Chọn thời lượng mặc định hoặc tuỳ chỉnh như 15, 30, 45, 60 phút cho mỗi buổi luyện."}
-              </p>
-              <div className="mt-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setAdvancedStatus(
-                      language === "en"
-                        ? "Custom scoring rubric saved for this Standard account (demo only)."
-                        : "Thiết lập thời lượng phỏng vấn đã được lưu cho tài khoản Standard này (UI demo).",
-                    )
-                  }
-                >
-                  {language === "en" ? "Set duration" : "Thiết lập thời lượng"}
+                  {deepDiveEnabled
+                    ? language === "en"
+                      ? "Disable deep dive"
+                      : "Tắt chế độ hỏi sâu"
+                    : language === "en"
+                      ? "Enable deep dive"
+                      : "Bật chế độ hỏi sâu"}
                 </Button>
               </div>
             </div>

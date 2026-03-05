@@ -10,12 +10,15 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <Hero />
+      {/* Spacer so content is not hidden under fixed navbar (navbar h-[72px]) */}
+      <div className="pt-[72px]">
+        <Hero />
       <Benefits />
       <Process />
       <Pricing />
       <FAQ />
       <Footer />
+      </div>
     </div>
   );
 };

@@ -1,13 +1,26 @@
 import AppShell from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
-import { FileText, CreditCard, Shield, LogOut } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
+import { CreditCard, Shield, LogOut } from "lucide-react";
 import { clearStoredToken } from "@/lib/api";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useState } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const [profileStatus, setProfileStatus] = useState("");
+  const [fullName, setFullName] = useState("Nguyễn Minh Anh");
+  const [email, setEmail] = useState("yourname@yourhr.ai");
+  const [targetPosition, setTargetPosition] = useState("");
+  const [experienceLevel, setExperienceLevel] = useState("");
+
+  const handleProfileSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileStatus(language === "en" ? "Profile saved." : "Thông tin hồ sơ đã được lưu.");
+  };
 
   const handleSignOutAll = () => {
     clearStoredToken();
@@ -27,12 +40,12 @@ const Dashboard = () => {
                 {language === "en" ? "Manage your YourHR AI account" : "Quản lý tài khoản YourHR AI"}
               </span>
               <h1 className="text-heading">
-                {language === "en" ? "Account & subscription" : "Tài khoản & gói đăng ký"}
+                {language === "en" ? "Account" : "Tài khoản"}
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
                 {language === "en"
-                  ? "See your current plan, update personal details and configure billing for your account."
-                  : "Xem gói hiện tại, chỉnh sửa thông tin cá nhân và cấu hình thanh toán cho tài khoản của bạn."}
+                  ? "Manage your profile, language and security. Pay per use when you run a CV review or interview."
+                  : "Quản lý hồ sơ, ngôn ngữ và bảo mật. Thanh toán theo lượt khi bạn dùng đánh giá CV hoặc phỏng vấn."}
               </p>
             </div>
           </div>
@@ -40,30 +53,6 @@ const Dashboard = () => {
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
           <div className="space-y-6">
-            <section className="rounded-2xl border border-border bg-background p-5 md:p-6">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em]">
-                    {language === "en" ? "Your plan" : "Gói của bạn"}
-                  </p>
-                  <h2 className="mt-1 text-lg font-semibold text-foreground">
-                    {language === "en" ? "Standard plan · Personal" : "Gói Standard · Cá nhân"}
-                  </h2>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {language === "en" ? "Renews on " : "Gia hạn vào ngày "}
-                    <span className="font-medium">07/03/2026</span>.{" "}
-                    {language === "en" ? "Billed via " : "Thanh toán qua "}
-                    <span className="font-medium">Visa •••• 4242</span>.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-xs">
-                  <Button size="sm" className="px-4 h-8">
-                    {language === "en" ? "Manage plan" : "Quản lý gói"}
-                  </Button>
-                </div>
-              </div>
-            </section>
-
             <section className="rounded-2xl border border-border bg-background p-5 md:p-6 space-y-1">
               <h2 className="text-sm font-semibold text-foreground">
                 {language === "en" ? "Account" : "Tài khoản"}
@@ -73,22 +62,72 @@ const Dashboard = () => {
                   ? "Configure your personal information and display language."
                   : "Cấu hình thông tin cá nhân và ngôn ngữ hiển thị."}
               </p>
-              <div className="divide-y divide-border text-sm">
-                <div className="flex items-center justify-between py-3">
-                  <div>
-                    <p className="font-medium text-foreground">
-                      {language === "en" ? "Edit personal information" : "Chỉnh sửa thông tin cá nhân"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {language === "en"
-                        ? "Update your name, email and department using YourHR AI."
-                        : "Cập nhật tên, email và phòng ban sử dụng YourHR AI."}
-                    </p>
+
+              {/* Inline profile form — no separate page */}
+              <form onSubmit={handleProfileSubmit} className="space-y-3 rounded-xl border border-border/80 bg-muted/30 p-4 mb-4">
+                <p className="text-xs font-medium text-foreground">
+                  {language === "en" ? "Personal information" : "Thông tin cá nhân"}
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="dashboard-fullname" className="text-xs">
+                      {language === "en" ? "Full name" : "Họ và tên"}
+                    </Label>
+                    <Input
+                      id="dashboard-fullname"
+                      className="h-8 text-sm"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                    />
                   </div>
-                  <Button asChild variant="outline" size="sm" className="h-8 px-3 text-xs">
-                    <Link to="/account">{language === "en" ? "Edit" : "Cập nhật"}</Link>
-                  </Button>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="dashboard-email" className="text-xs">
+                      Email
+                    </Label>
+                    <Input
+                      id="dashboard-email"
+                      type="email"
+                      className="h-8 text-sm"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="dashboard-target-position" className="text-xs">
+                      {language === "en" ? "Target position" : "Vị trí mục tiêu"}
+                    </Label>
+                    <Input
+                      id="dashboard-target-position"
+                      className="h-8 text-sm"
+                      value={targetPosition}
+                      onChange={(e) => setTargetPosition(e.target.value)}
+                      placeholder=""
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="dashboard-experience-level" className="text-xs">
+                      {language === "en" ? "Experience level" : "Mức kinh nghiệm"}
+                    </Label>
+                    <Input
+                      id="dashboard-experience-level"
+                      className="h-8 text-sm"
+                      value={experienceLevel}
+                      onChange={(e) => setExperienceLevel(e.target.value)}
+                      placeholder=""
+                    />
+                  </div>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Button type="submit" size="sm" className="h-8 text-xs">
+                    {language === "en" ? "Save" : "Lưu thay đổi"}
+                  </Button>
+                  {profileStatus && (
+                    <span className="text-xs text-muted-foreground">{profileStatus}</span>
+                  )}
+                </div>
+              </form>
+
+              <div className="divide-y divide-border text-sm">
                 <div className="flex items-center justify-between py-3">
                   <div>
                     <p className="font-medium text-foreground">
@@ -112,20 +151,20 @@ const Dashboard = () => {
             <section className="rounded-2xl border border-border bg-background p-5 md:p-6">
               <div className="flex items-center gap-3 mb-3">
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                  NM
+                  {fullName.slice(0, 2).toUpperCase() || "NM"}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Nguyễn Minh Anh</p>
-                  <p className="text-xs text-muted-foreground">Talent Acquisition · yourname@yourhr.ai</p>
+                  <p className="text-sm font-semibold text-foreground">{fullName}</p>
+                  <p className="text-xs text-muted-foreground">{email}</p>
                 </div>
               </div>
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">
-                    {language === "en" ? "Current plan" : "Gói hiện tại"}
+                    {language === "en" ? "Usage model" : "Hình thức sử dụng"}
                   </span>
                   <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
-                    {language === "en" ? "Standard plan" : "Gói Standard"}
+                    {language === "en" ? "Pay per use" : "Mua theo lượt"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">

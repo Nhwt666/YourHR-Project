@@ -1,96 +1,84 @@
 import AppShell from "@/components/AppShell";
+import { interviewHistoryList } from "@/data/interviewHistory";
 import { Link } from "react-router-dom";
 import { Clock3 } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useState } from "react";
 
-const historyData = [
+const cvHistory = [
   {
     id: 1,
-    title: "Luyện Frontend cấp cao",
-    role: "Kỹ sư Frontend cấp cao",
-    score: 8.1,
-    comment: "Tự tin khi giải thích, cần bổ sung ví dụ thực tế hơn ở phần performance.",
-    date: "28 Thg 2, 2026",
+    title: "Đánh giá CV Frontend Developer",
+    role: "Công việc mục tiêu: Frontend Developer",
+    score: 8.0,
+    comment: "CV rõ ràng, nên bổ sung thêm thành tựu có số liệu và phần kỹ năng frontend chuyên sâu.",
+    date: "15 Thg 2, 2026",
   },
   {
     id: 2,
-    title: "Luyện vòng System Design",
-    role: "Kỹ sư Frontend cấp cao",
-    score: 7.4,
-    comment: "Ý tưởng đúng hướng nhưng còn thiếu cấu trúc tổng thể, dễ bị lặp ý.",
-    date: "27 Thg 2, 2026",
+    title: "Đánh giá CV Backend Developer",
+    role: "Công việc mục tiêu: Backend Developer",
+    score: 7.3,
+    comment: "Kinh nghiệm backend tốt nhưng phần mô tả dự án còn chung chung, thiếu vai trò cụ thể.",
+    date: "10 Thg 2, 2026",
   },
   {
     id: 3,
-    title: "Luyện Product Thinking",
-    role: "Nhà thiết kế sản phẩm",
-    score: 8.9,
-    comment: "Khả năng phân tích nhu cầu tốt, nên rút gọn cách trình bày cho rõ phần ưu tiên.",
-    date: "26 Thg 2, 2026",
+    title: "Đánh giá CV Data Analyst",
+    role: "Công việc mục tiêu: Data Analyst",
+    score: 7.8,
+    comment: "Nên làm nổi bật kỹ năng SQL, dashboard và chỉ số kinh doanh đã cải thiện nhờ phân tích dữ liệu.",
+    date: "5 Thg 2, 2026",
   },
   {
     id: 4,
-    title: "Luyện Backend cơ bản",
-    role: "Kỹ sư Backend",
-    score: 6.8,
-    comment: "Thiếu tự tin khi nói về database và transaction, cần ôn lại khái niệm chuẩn.",
-    date: "24 Thg 2, 2026",
-  },
-  {
-    id: 5,
-    title: "Luyện phỏng vấn gấp",
-    role: "Kỹ sư Backend",
-    score: 9.2,
-    comment: "Trình bày rõ ràng, ví dụ cụ thể, chỉ cần luyện thêm cách kết câu gọn hơn.",
-    date: "22 Thg 2, 2026",
-  },
-  {
-    id: 6,
-    title: "Luyện Data Interview",
-    role: "Chuyên viên phân tích dữ liệu",
-    score: 7.5,
-    comment: "Nắm khung phân tích tốt, nhưng phần giải thích thuật ngữ còn hơi dài dòng.",
-    date: "20 Thg 2, 2026",
-  },
-  {
-    id: 7,
-    title: "Luyện QA Automation",
-    role: "Chuyên viên QA Automation",
-    score: 8.3,
-    comment: "Case test đa dạng, cần bổ sung thêm cách đo lường hiệu quả test.",
-    date: "19 Thg 2, 2026",
-  },
-  {
-    id: 8,
-    title: "Luyện Product Owner",
-    role: "Product Owner",
-    score: 7.9,
-    comment: "Cách nói chuyện thân thiện, nên nhấn mạnh hơn vào trade‑off khi ra quyết định.",
-    date: "18 Thg 2, 2026",
-  },
-  {
-    id: 9,
-    title: "Luyện Data Scientist",
-    role: "Data Scientist",
-    score: 8.7,
-    comment: "Hiểu mô hình tốt, cần thêm ví dụ về đánh giá mô hình trong môi trường thực tế.",
-    date: "16 Thg 2, 2026",
+    title: "Đánh giá CV QA Automation",
+    role: "Công việc mục tiêu: QA Automation Engineer",
+    score: 7.1,
+    comment: "Thiếu phần tóm tắt kinh nghiệm, nên gom tool test và framework vào một nhóm kỹ năng rõ ràng.",
+    date: "1 Thg 2, 2026",
   },
 ];
 
 const History = () => {
   const { language } = useLanguage();
+  const [view, setView] = useState<"interview" | "cv">("interview");
 
   const title =
     language === "en"
-      ? "Your interview practice history"
-      : "Lịch sử luyện phỏng vấn của bạn";
+      ? "Your practice history with YourHR AI"
+      : "Lịch sử luyện với YourHR AI";
   const subtitle =
     language === "en"
-      ? "Overview of your recent AI practice sessions for this account only."
-      : "Tổng hợp các buổi luyện tập gần đây cùng AI, chỉ hiển thị cho tài khoản hiện tại.";
+      ? "Overview of your recent AI interview sessions and CV reviews for this account."
+      : "Tổng hợp các buổi luyện phỏng vấn và đánh giá CV gần đây cùng AI cho tài khoản hiện tại.";
   const tableTitle =
-    language === "en" ? "Recent practice sessions" : "Phiên luyện gần đây";
+    view === "interview"
+      ? language === "en"
+        ? "Recent interview practice sessions"
+        : "Phiên luyện phỏng vấn gần đây"
+      : language === "en"
+        ? "Recent CV review sessions"
+        : "Lượt đánh giá CV gần đây";
+
+  const rows = view === "interview" ? interviewHistoryList : cvHistory;
+
+  const firstColumnLabel =
+    view === "interview"
+      ? language === "en"
+        ? "Session"
+        : "Phiên luyện"
+      : language === "en"
+        ? "Review"
+        : "Lượt đánh giá CV";
+  const secondColumnLabel =
+    view === "interview"
+      ? language === "en"
+        ? "Role"
+        : "Vị trí"
+      : language === "en"
+        ? "Target job"
+        : "Công việc mục tiêu";
   return (
     <AppShell>
       <div className="rounded-2xl border border-border bg-background p-6 mb-6">
@@ -104,28 +92,68 @@ const History = () => {
       </div>
 
       <div className="rounded-xl border border-border bg-background overflow-hidden">
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between gap-3 flex-wrap">
           <h2 className="text-base font-semibold">{tableTitle}</h2>
-          <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Clock3 className="h-3.5 w-3.5" /> 30 ngày gần nhất
-          </span>
+          <div className="flex items-center gap-3">
+            <div className="inline-flex rounded-full bg-surface p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => setView("interview")}
+                className={`px-3 py-1 rounded-full transition-colors ${
+                  view === "interview"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {language === "en" ? "Interview history" : "Lịch sử phỏng vấn"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setView("cv")}
+                className={`px-3 py-1 rounded-full transition-colors ${
+                  view === "cv"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {language === "en" ? "CV review history" : "Lịch sử đánh giá CV"}
+              </button>
+            </div>
+            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Clock3 className="h-3.5 w-3.5" /> 30 ngày gần nhất
+            </span>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-surface/80">
-                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Phiên luyện</th>
-                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Vị trí</th>
-                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Điểm</th>
-                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Nhận xét nhanh</th>
-                <th className="text-left py-3 px-5 font-medium text-muted-foreground">Ngày</th>
+                <th className="text-left py-3 px-5 font-medium text-muted-foreground">
+                  {firstColumnLabel}
+                </th>
+                <th className="text-left py-3 px-5 font-medium text-muted-foreground">
+                  {secondColumnLabel}
+                </th>
+                <th className="text-left py-3 px-5 font-medium text-muted-foreground">
+                  {language === "en" ? "Score" : "Điểm"}
+                </th>
+                <th className="text-left py-3 px-5 font-medium text-muted-foreground">
+                  {language === "en" ? "Quick note" : "Nhận xét nhanh"}
+                </th>
+                <th className="text-left py-3 px-5 font-medium text-muted-foreground">
+                  {language === "en" ? "Date" : "Ngày"}
+                </th>
               </tr>
             </thead>
             <tbody>
-              {historyData.map((item) => (
+              {rows.map((item) => (
                 <tr key={item.id} className="border-b border-border last:border-0 hover:bg-surface/70 transition-colors">
                   <td className="py-3.5 px-5">
-                    <Link to="/results" className="font-medium text-foreground hover:text-primary transition-colors">
+                    <Link
+                      to={view === "interview" ? `/history/session/${item.id}` : `/history/cv-review/${item.id}`}
+                      state={view === "interview" ? { session: item } : { cvReview: item }}
+                      className="font-medium text-foreground hover:text-primary transition-colors"
+                    >
                       {item.title}
                     </Link>
                   </td>
@@ -140,7 +168,7 @@ const History = () => {
                             : "bg-amber-50 text-amber-700 border border-amber-200"
                       }`}
                     >
-                      {item.score}
+                      {item.score}/10
                     </span>
                   </td>
                   <td className="py-3.5 px-5 text-xs text-muted-foreground max-w-xs">

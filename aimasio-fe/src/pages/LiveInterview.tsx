@@ -1,6 +1,4 @@
-import AppShell from "@/components/AppShell";
-import { Button } from "@/components/ui/button";
-import { Mic, Video, PhoneOff } from "lucide-react";
+import { Mic, Video, PhoneOff, Maximize2, Minimize2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as did from "@d-id/client-sdk";
@@ -39,6 +37,40 @@ const LiveInterview = () => {
   const localStreamRef = useRef<MediaStream | null>(null);
   const agentManagerRef = useRef<any>(null);
   const isFinishingInterviewRef = useRef(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement));
+    };
+    document.addEventListener("fullscreenchange", handleFsChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFsChange);
+    };
+  }, []);
+
+  // Mặc định vào fullscreen khi mở trang Live Interview
+  useEffect(() => {
+    const el = containerRef.current;
+    if (el?.requestFullscreen && !document.fullscreenElement) {
+      el.requestFullscreen().catch(() => {});
+    }
+  }, []);
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        if (containerRef.current?.requestFullscreen) {
+          await containerRef.current.requestFullscreen();
+        }
+      } else if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      }
+    } catch {
+      // Silently ignore fullscreen errors; UI still usable without it.
+    }
+  };
 
   const sessionId = localStorage.getItem("aimasio_session_id");
   const role = localStorage.getItem("aimasio_role") ?? "Phiên ứng viên";
@@ -549,7 +581,10 @@ const LiveInterview = () => {
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      // Constraints compatible with mobile (facingMode: user) and desktop
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
+      });
       localStreamRef.current = stream;
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
@@ -565,91 +600,93 @@ const LiveInterview = () => {
   };
 
   return (
-    <AppShell>
-      <div className="max-w-5xl space-y-6">
-        <div className="rounded-2xl border border-border bg-background p-4 md:p-5 shadow-sm">
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground">Phiên phỏng vấn trực tuyến</p>
-              <h1 className="text-lg md:text-2xl font-semibold text-foreground mt-1">Live interview</h1>
-              <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                {role} — Phiên ứng viên
-              </p>
-            </div>
-            <span className="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary">
-              Đang ghi nhận
-            </span>
-          </div>
+    <div ref={containerRef} className="min-h-screen w-full flex flex-col bg-background text-foreground">
+      <header className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-border bg-background">
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground">Phiên phỏng vấn trực tuyến</p>
+          <h1 className="text-lg md:text-2xl font-semibold text-foreground mt-0.5">Live interview</h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-0.5">{role} — Phiên ứng viên</p>
+        </div>
+        <span className="rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary">
+          Đang ghi nhận
+        </span>
+      </header>
 
-          <div className="relative mt-3 rounded-xl border border-border bg-black overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col">
+        <div className="relative flex-1 min-h-[50vh] bg-black">
+          <video
+            ref={remoteVideoRef}
+            autoPlay
+            playsInline
+            className="absolute inset-0 w-full h-full object-contain object-center bg-black"
+          />
+          <div className="absolute bottom-4 right-4 w-28 md:w-40 rounded-md border border-border bg-background/90 shadow-sm overflow-hidden z-10">
+            {/* Video always mounted so ref exists when we assign stream (fixes camera not showing) */}
             <video
-              ref={remoteVideoRef}
+              ref={localVideoRef}
               autoPlay
+              muted
               playsInline
-              className="w-full h-[360px] md:h-[440px] object-contain object-center bg-black"
+              className={`h-20 md:h-24 w-full object-cover object-center ${cameraEnabled ? "block" : "hidden"}`}
             />
-            <div className="absolute bottom-4 right-4 w-28 md:w-40 rounded-md border border-border bg-background/90 shadow-sm overflow-hidden">
-              {cameraEnabled ? (
-                <video
-                  ref={localVideoRef}
-                  autoPlay
-                  muted
-                  playsInline
-                  className="h-20 md:h-24 w-full object-cover object-center"
-                />
-              ) : (
-                <div className="flex h-20 md:h-24 w-full items-center justify-center bg-surface text-xs text-muted-foreground">
-                  Xem trước camera
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-3 flex flex-col items-center gap-2">
-            <div className="flex items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={handleMicToggle}
-                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border ${
-                  micEnabled ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-muted-foreground"
-                }`}
-                disabled={loading}
-              >
-                <Mic className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleCameraToggle}
-                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border ${
-                  cameraEnabled ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-muted-foreground"
-                }`}
-                disabled={loading}
-              >
-                <Video className="h-4 w-4" />
-              </button>
-              <button
-                type="button"
-                onClick={handleEnd}
-                disabled={loading}
-                className="inline-flex h-9 items-center gap-1.5 rounded-full bg-destructive px-4 text-xs font-medium text-destructive-foreground"
-              >
-                <PhoneOff className="h-4 w-4" />
-                Kết thúc
-              </button>
-            </div>
-            <p className="text-[11px] text-muted-foreground">
-              {avatarStatus} · {isListening ? "Microphone đang bật, AI đang lắng nghe bạn." : "Nhấn micro để bật ghi âm trả lời."}
-            </p>
+            {!cameraEnabled && (
+              <div className="absolute inset-0 flex items-center justify-center bg-surface text-xs text-muted-foreground">
+                Xem trước camera
+              </div>
+            )}
           </div>
         </div>
 
-        {status ? (
-          <p className="text-xs rounded-md px-2.5 py-1.5 inline-flex text-muted-foreground bg-surface border border-border">
-            {status}
+        <div className="shrink-0 py-4 flex flex-col items-center gap-2 bg-background border-t border-border">
+          <div className="flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleMicToggle}
+              className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
+                micEnabled ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-muted-foreground hover:text-foreground"
+              }`}
+              disabled={loading}
+            >
+              <Mic className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={handleCameraToggle}
+              className={`inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors ${
+                cameraEnabled ? "border-primary bg-primary/10 text-primary" : "border-border bg-background text-muted-foreground hover:text-foreground"
+              }`}
+              disabled={loading}
+            >
+              <Video className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </button>
+            <button
+              type="button"
+              onClick={handleEnd}
+              disabled={loading}
+              className="inline-flex h-10 items-center gap-1.5 rounded-full bg-destructive px-5 text-sm font-medium text-destructive-foreground hover:opacity-90 transition-opacity"
+            >
+              <PhoneOff className="h-4 w-4" />
+              Kết thúc
+            </button>
+          </div>
+          <p className="text-[11px] text-muted-foreground text-center px-4">
+            {avatarStatus} · {isListening ? "Microphone đang bật, AI đang lắng nghe bạn." : "Nhấn micro để bật ghi âm trả lời."}
           </p>
-        ) : null}
+          {status ? (
+            <p className="text-xs rounded-md px-2.5 py-1.5 text-muted-foreground bg-surface border border-border">
+              {status}
+            </p>
+          ) : null}
+        </div>
       </div>
-    </AppShell>
+    </div>
   );
 };
 

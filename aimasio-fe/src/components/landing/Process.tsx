@@ -4,7 +4,7 @@ const stepsVi = [
   {
     number: "01",
     title: "Chọn hồ sơ phỏng vấn",
-    description: "Chọn vai trò và bối cảnh để AI cá nhân hóa bộ câu hỏi đúng mục tiêu.",
+    description: "Chọn vai trò, kiểu phỏng vấn (kỹ thuật, hành vi, sàng lọc) và tùy chọn CV để AI cá nhân hóa bộ câu hỏi đúng mục tiêu.",
   },
   {
     number: "02",
@@ -14,7 +14,7 @@ const stepsVi = [
   {
     number: "03",
     title: "Nhận báo cáo AI ngay lập tức",
-    description: "Xem điểm số, điểm mạnh, khoảng thiếu và đề xuất cải thiện có thể áp dụng ngay.",
+    description: "Xem điểm số, nhận xét theo từng vòng, điểm mạnh–điểm yếu–cần phát huy và gợi ý cải thiện có thể áp dụng ngay.",
   },
 ];
 
@@ -27,7 +27,7 @@ const Process = () => {
           {
             number: "01",
             title: "Choose interview profile",
-            description: "Select role and context so AI can generate the right question set.",
+            description: "Select role, interview style (technical, behavioural, screening) and optionally your CV so AI can tailor the question set.",
           },
           {
             number: "02",
@@ -37,7 +37,7 @@ const Process = () => {
           {
             number: "03",
             title: "Get instant AI report",
-            description: "See scores, strengths, gaps and actionable recommendations right after the session.",
+            description: "See scores, feedback by round, strengths–gaps–what to build on, and actionable suggestions right after the session.",
           },
         ]
       : stepsVi;

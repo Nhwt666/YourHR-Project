@@ -9,7 +9,12 @@ import InterviewSetup from "./pages/InterviewSetup";
 import LiveInterview from "./pages/LiveInterview";
 import Results from "./pages/Results";
 import History from "./pages/History";
+import SessionResult from "./pages/SessionResult";
+import CvReviewDetail from "./pages/CvReviewDetail";
 import CvReview from "./pages/CvReview";
+import CvEdit from "./pages/CvEdit";
+import CvPayment from "./pages/CvPayment";
+import InterviewPayment from "./pages/InterviewPayment";
 import Auth from "./pages/Auth";
 import Account from "./pages/Account";
 import NotFound from "./pages/NotFound";
@@ -40,9 +45,14 @@ const App = () => (
             <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
             <Route path="/interview-setup" element={<ProtectedRoute><InterviewSetup /></ProtectedRoute>} />
             <Route path="/live-interview" element={<ProtectedRoute><LiveInterview /></ProtectedRoute>} />
+            <Route path="/cv-payment" element={<CvPayment />} />
+            <Route path="/interview-payment" element={<InterviewPayment />} />
             <Route path="/cv-review" element={<ProtectedRoute><CvReview /></ProtectedRoute>} />
+            <Route path="/cv-edit" element={<ProtectedRoute><CvEdit /></ProtectedRoute>} />
             <Route path="/results" element={<ProtectedRoute><Results /></ProtectedRoute>} />
             <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+            <Route path="/history/session/:sessionId" element={<ProtectedRoute><SessionResult /></ProtectedRoute>} />
+            <Route path="/history/cv-review/:reviewId" element={<ProtectedRoute><CvReviewDetail /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <SupportChatBubble />
