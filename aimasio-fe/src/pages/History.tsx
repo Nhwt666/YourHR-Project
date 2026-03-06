@@ -46,8 +46,8 @@ const History = () => {
 
   const title =
     language === "en"
-      ? "Your practice history with YourHR AI"
-      : "Lịch sử luyện với YourHR AI";
+      ? "Your practice history with AI Interview Master"
+      : "Lịch sử luyện với AI Interview Master";
   const subtitle =
     language === "en"
       ? "Overview of your recent AI interview sessions and CV reviews for this account."

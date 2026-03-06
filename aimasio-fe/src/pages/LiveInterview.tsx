@@ -536,7 +536,7 @@ const LiveInterview = () => {
         setAvatarMode("fallback");
         setAvatarStatus(mapDidError(error));
       }
-      await speakAsAvatar("Chào bạn, mình là AI HR của YourHR AI. Chúng ta bắt đầu buổi phỏng vấn nhé.");
+      await speakAsAvatar("Chào bạn, mình là AI HR của AI Interview Master. Chúng ta bắt đầu buổi phỏng vấn nhé.");
       await loadQuestion();
     })();
     return () => {

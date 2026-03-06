@@ -1,65 +1,54 @@
 import { useState } from "react";
 import { MessageCircle, X, Sparkles } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { Button } from "@/components/ui/button";
 
-type Question = {
-  id: string;
-  labelVi: string;
-  labelEn: string;
-  answerVi: string;
-  answerEn: string;
+type ChatMessage = {
+  id: number;
+  from: "user" | "assistant";
+  text: string;
 };
-
-const questions: Question[] = [
-  {
-    id: "how-interview-works",
-    labelVi: "Buổi phỏng vấn hoạt động thế nào?",
-    labelEn: "How does the AI interview work?",
-    answerVi:
-      "Mỗi buổi phỏng vấn gồm nhiều câu hỏi theo vai trò. AI sẽ đọc câu trả lời của bạn, chấm điểm và cuối buổi tạo báo cáo tổng hợp điểm mạnh, điểm yếu và gợi ý cải thiện.",
-    answerEn:
-      "Each interview consists of role‑specific questions. The AI listens to your answers, scores them and then generates a report with strengths, gaps and concrete suggestions.",
-  },
-  {
-    id: "cv-review",
-    labelVi: "AI đánh giá CV ra sao?",
-    labelEn: "How does CV review work?",
-    answerVi:
-      "Bạn tải CV lên, chọn vị trí và bối cảnh công ty. AI sẽ đọc nội dung, cho điểm tổng quan, liệt kê điểm mạnh, khoảng thiếu và các đề xuất chỉnh sửa từng phần.",
-    answerEn:
-      "You upload your CV, choose a target role and company context. The AI analyses the content, gives an overall score, highlights strengths, missing skills and concrete edit suggestions.",
-  },
-  {
-    id: "pricing",
-    labelVi: "Các gói giá khác nhau thế nào?",
-    labelEn: "What is the difference between plans?",
-    answerVi:
-      "Gói miễn phí phù hợp để làm quen sản phẩm. Các gói trả phí (Standard, Premium) mở thêm số buổi phỏng vấn mỗi tháng, nhiều mẫu câu hỏi hơn và báo cáo chi tiết hơn.",
-    answerEn:
-      "The free plan is great for trying the product. Paid plans (Standard, Premium) increase the number of monthly sessions, question banks and depth of reporting.",
-  },
-];
 
 const SupportChatBubble = () => {
   const { language } = useLanguage();
   const [open, setOpen] = useState(false);
-  const [activeAnswer, setActiveAnswer] = useState<Question | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [
+    {
+      id: 1,
+      from: "assistant",
+      text:
+        language === "en"
+          ? "Hi, this is the AI Interview Master assistant. This is a demo chat — send a message and it will stay here as your note."
+          : "Chào bạn, mình là trợ lý AI Interview Master. Đây là khung chat demo, bạn có thể gửi tin nhắn để lưu lại ghi chú của riêng mình.",
+    },
+  ]);
+  const [draft, setDraft] = useState("");
 
   const title =
     language === "en" ? "Need quick help?" : "Cần hỗ trợ nhanh?";
   const intro =
     language === "en"
-      ? "Ask YourHR AI assistant about how the product works."
-      : "Hỏi trợ lý YourHR AI về cách sản phẩm hoạt động.";
-  const placeholder =
+      ? "This chat is a simple demo and does not send data to any server."
+      : "Khung chat này chỉ là demo giao diện, không gửi dữ liệu ra bên ngoài.";
+  const inputPlaceholder =
     language === "en"
-      ? "Shortly this will become a real chat. For now, pick a quick question above."
-      : "Trong bản demo này, bạn hãy chọn một câu hỏi có sẵn ở trên để xem giải thích nhanh.";
+      ? "Type a message..."
+      : "Nhập nội dung cần ghi chú...";
+
+  const handleSend = () => {
+    const trimmed = draft.trim();
+    if (!trimmed) return;
+    setMessages((prev) => [
+      ...prev,
+      { id: prev.length + 1, from: "user", text: trimmed },
+    ]);
+    setDraft("");
+  };
 
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
       {open && (
-        <div className="w-80 max-w-[90vw] rounded-2xl border border-border bg-background shadow-xl">
+        <div className="w-80 max-w-[90vw] rounded-2xl border border-border bg-background shadow-xl flex flex-col overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border/80">
             <div className="flex items-center gap-2">
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
@@ -68,7 +57,7 @@ const SupportChatBubble = () => {
               <div className="flex flex-col">
                 <span className="text-xs font-semibold text-foreground">{title}</span>
                 <span className="text-[10px] text-muted-foreground">
-                  YourHR assistant
+                  AI Interview Master assistant
                 </span>
               </div>
             </div>
@@ -81,38 +70,49 @@ const SupportChatBubble = () => {
             </button>
           </div>
 
-          <div className="px-4 py-3 space-y-3">
+          <div className="flex-1 flex flex-col px-4 py-3 gap-3">
             <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
               <Sparkles className="h-3 w-3 text-primary" />
               {intro}
             </p>
-            <div className="space-y-1.5">
-              {questions.map((q) => (
-                <button
-                  key={q.id}
-                  type="button"
-                  onClick={() => setActiveAnswer(q)}
-                  className="w-full rounded-lg border border-border bg-surface px-3 py-1.5 text-left text-[11px] text-foreground hover:border-primary/40"
+            <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+              {messages.map((m) => (
+                <div
+                  key={m.id}
+                  className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  {language === "en" ? q.labelEn : q.labelVi}
-                </button>
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-3 py-1.5 text-[11px] leading-relaxed ${
+                      m.from === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-surface text-foreground border border-border/70"
+                    }`}
+                  >
+                    {m.text}
+                  </div>
+                </div>
               ))}
             </div>
-            <div className="rounded-lg border border-dashed border-border bg-surface px-3 py-2 text-[11px] text-muted-foreground leading-relaxed">
-              {activeAnswer ? (
-                <>
-                  <p className="font-semibold text-foreground mb-1">
-                    {language === "en" ? activeAnswer.labelEn : activeAnswer.labelVi}
-                  </p>
-                  <p>
-                    {language === "en" ? activeAnswer.answerEn : activeAnswer.answerVi}
-                  </p>
-                </>
-              ) : (
-                <p>{placeholder}</p>
-              )}
-            </div>
           </div>
+
+          <form
+            className="border-t border-border/80 px-3 py-2 flex items-center gap-2 bg-background"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}
+          >
+            <input
+              type="text"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder={inputPlaceholder}
+              className="flex-1 rounded-full border border-border bg-surface px-3 py-1.5 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+            <Button type="submit" size="sm" className="h-7 px-3 text-[11px]">
+              {language === "en" ? "Send" : "Gửi"}
+            </Button>
+          </form>
         </div>
       )}
 

@@ -16,8 +16,8 @@ const faqsVi = [
     a: "Nền tảng theo dõi thời gian, độ nhất quán câu trả lời và đánh dấu hành vi bất thường để bạn kiểm tra lại.",
   },
   {
-    q: "Có kết nối với phần mềm quản lý hồ sơ ứng viên không?",
-    a: "Có. YourHR AI có thể tích hợp với các phần mềm quản lý tuyển dụng phổ biến và mở rộng theo nhu cầu.",
+    q: "Hệ thống có lưu lịch sử phỏng vấn và CV không?",
+    a: "Có. AI Interview Master tự động lưu lịch sử buổi phỏng vấn và các lượt đánh giá CV để bạn xem lại, so sánh tiến bộ và tải xuống khi cần.",
   },
   {
     q: "Cách tính phí và dùng thử?",
@@ -39,8 +39,8 @@ const faqsEn = [
     a: "The platform tracks timing, answer consistency and flags unusual behaviour for you to review.",
   },
   {
-    q: "Can it connect to applicant/candidate management software?",
-    a: "Yes. YourHR AI can integrate with common recruitment management tools and be extended as needed.",
+    q: "Does the system store interview and CV history?",
+    a: "Yes. AI Interview Master keeps a history of your interview sessions and CV reviews so you can review them later, track progress and download data when needed.",
   },
   {
     q: "How is pricing and free trial?",
@@ -61,8 +61,8 @@ const FAQ = () => {
     language === "en" ? "Frequently asked questions" : "Câu hỏi thường gặp";
   const subtitle =
     language === "en"
-      ? "Key information about how YourHR AI works."
-      : "Tất cả thông tin quan trọng về YourHR AI.";
+      ? "Key information about how AI Interview Master works."
+      : "Tất cả thông tin quan trọng về AI Interview Master.";
 
   return (
     <section id="faq" className="py-24 bg-background-alt">

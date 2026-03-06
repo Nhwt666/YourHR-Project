@@ -4,33 +4,39 @@ import { useLanguage } from "@/i18n/LanguageContext";
 const benefitsVi = [
   {
     icon: Zap,
-    title: "Phỏng vấn cá nhân hóa chỉ trong vài phút",
-    description: "YourHR AI điều chỉnh luồng câu hỏi theo vai trò, cấp độ và câu trả lời. Luyện nhiều lần trong môi trường mô phỏng áp lực thật để quen dần và tự tin hơn.",
+    title: "AI điều chỉnh câu hỏi theo bạn",
+    description:
+      "AI điều chỉnh câu hỏi dựa trên vai trò, cấp độ và câu trả lời trước đó để mô phỏng một buổi phỏng vấn sát với bối cảnh thực tế.",
   },
   {
     icon: MessageSquare,
-    title: "Nhận xét hiệu năng cá nhân, rõ từng điểm",
-    description: "Nhận phản hồi tức thì về cấu trúc câu trả lời, độ rõ ràng khi giao tiếp, giọng nói và biểu cảm — giúp bạn biết cần cải thiện đâu thay vì chỉ dựa vào cảm tính.",
+    title: "Nhận xét hiệu năng cá nhân",
+    description:
+      "Nhận phản hồi về cấu trúc câu trả lời, độ rõ ràng khi giao tiếp và mức độ trôi chảy khi trả lời để biết điểm cần cải thiện.",
   },
   {
     icon: BarChart3,
-    title: "Tín hiệu rõ ràng, không nhận xét chung chung",
-    description: "Nhận bảng điểm có cấu trúc, điểm mạnh và khoảng thiếu để ra quyết định dựa trên dữ liệu.",
+    title: "Đánh giá có cấu trúc",
+    description:
+      "Kết quả được tổng hợp thành bảng điểm theo các tiêu chí như nội dung, giao tiếp và tư duy để dễ theo dõi và cải thiện.",
   },
   {
     icon: Shield,
-    title: "Đánh giá công bằng và nhất quán",
-    description: "Tiêu chí minh bạch và cách chấm điểm thống nhất giúp mỗi buổi đánh giá đồng bộ, hạn chế thiên kiến.",
+    title: "Đánh giá nhất quán",
+    description:
+      "Các câu trả lời được đánh giá theo cùng một bộ tiêu chí để đảm bảo sự nhất quán giữa các buổi phỏng vấn.",
   },
   {
     icon: Activity,
-    title: "Phân tích biểu cảm và mô phỏng áp lực",
-    description: "Đo tín hiệu biểu cảm, giọng nói và tạo tình huống áp lực có kiểm soát. Luyện lặp lại giúp giảm lo lắng và nâng độ ổn định khi trả lời.",
+    title: "Phân tích tín hiệu giao tiếp",
+    description:
+      "Hệ thống phân tích một số tín hiệu như tốc độ nói, khoảng dừng và biểu cảm cơ bản để cung cấp phản hồi sau buổi phỏng vấn.",
   },
   {
     icon: FileCheck,
-    title: "CV sẵn sàng và tự tin hơn trước phỏng vấn",
-    description: "Điểm hóa CV và gợi ý cải thiện theo kỳ vọng nhà tuyển dụng, giúp ứng viên cảm thấy sẵn sàng hơn trước khi bước vào phỏng vấn.",
+    title: "Chuẩn bị CV tốt hơn trước phỏng vấn",
+    description:
+      "AI phân tích CV và gợi ý cải thiện nội dung để giúp ứng viên chuẩn bị tốt hơn trước khi bước vào phỏng vấn.",
   },
 ];
 
@@ -38,7 +44,7 @@ const benefitsEn = [
   {
     icon: Zap,
     title: "Personalised interviews in minutes",
-    description: "YourHR AI adapts questions to role, level and your answers. Practice repeatedly in a simulated high-pressure environment to build confidence over time.",
+    description: "AI Interview Master adapts questions to role, level and your answers. Practice repeatedly in a simulated high-pressure environment to build confidence over time.",
   },
   {
     icon: MessageSquare,
@@ -73,8 +79,8 @@ const Benefits = () => {
 
   const sectionTitle =
     language === "en"
-      ? "Why candidates and hiring teams choose YourHR AI"
-      : "Vì sao ứng viên và nhà tuyển dụng chọn YourHR AI";
+      ? "Why candidates and hiring teams choose AI Interview Master"
+      : "Vì sao ứng viên và nhà tuyển dụng chọn AI Interview Master";
 
   const heading =
     language === "en"

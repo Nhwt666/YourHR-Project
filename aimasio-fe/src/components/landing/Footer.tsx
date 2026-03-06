@@ -24,15 +24,15 @@ const Footer = () => {
   const privacyLink = language === "en" ? "Privacy" : "Bảo mật";
   const copyright =
     language === "en"
-      ? `© ${new Date().getFullYear()} YourHR AI. All rights reserved.`
-      : `© ${new Date().getFullYear()} YourHR AI. Đã đăng ký bản quyền.`;
+      ? `© ${new Date().getFullYear()} AI Interview Master. All rights reserved.`
+      : `© ${new Date().getFullYear()} AI Interview Master. Đã đăng ký bản quyền.`;
 
   return (
     <footer className="border-t border-border py-12">
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between gap-8">
           <div className="max-w-xs">
-            <span className="text-sm font-semibold text-foreground">YourHR AI</span>
+            <span className="text-sm font-semibold text-foreground">AI Interview Master</span>
             <p className="text-sm text-muted-foreground mt-1">
               {tagline}
             </p>
@@ -44,44 +44,6 @@ const Footer = () => {
             </p>
           </div>
           <div className="flex flex-wrap gap-10">
-            <div className="space-y-2">
-              <span className="text-xs uppercase tracking-widest text-muted-foreground">
-                {productTitle}
-              </span>
-              <div className="flex flex-col gap-1.5">
-                <Link
-                  to="/dashboard"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {practiceLink}
-                </Link>
-                <Link
-                  to="#pricing"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {pricingLink}
-                </Link>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <span className="text-xs uppercase tracking-widest text-muted-foreground">
-                {companyTitle}
-              </span>
-              <div className="flex flex-col gap-1.5">
-                <Link
-                  to="#"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {aboutLink}
-                </Link>
-                <Link
-                  to="#"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {privacyLink}
-                </Link>
-              </div>
-            </div>
             <div className="space-y-2">
               <span className="text-xs uppercase tracking-widest text-muted-foreground">
                 {contactTitle}

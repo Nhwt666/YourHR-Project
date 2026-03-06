@@ -21,8 +21,11 @@ const Hero = () => {
       ? "Structured interviews, clear tracking, and instant feedback after every session. The system also simulates a real-life interview so you can practice in realistic scenarios."
       : "Phỏng vấn có cấu trúc, theo dõi rõ ràng và nhận đánh giá nhanh sau mỗi buổi. Đồng thời, hệ thống mô phỏng trực quan một buổi phỏng vấn thực tế để bạn luyện tập sát tình huống thật.";
 
-  const cta =
-    language === "en" ? "Start practicing interviews" : "Bắt đầu dùng thử phỏng vấn";
+  const cvCta =
+    language === "en" ? "Try CV scan" : "Dùng thử quét CV";
+
+  const interviewCta =
+    language === "en" ? "Create interview session" : "Tạo cuộc phỏng vấn";
 
   return (
     <section id="overview" className="py-24 lg:py-32">
@@ -38,17 +41,28 @@ const Hero = () => {
             <p className="text-body text-muted-foreground mb-10 leading-relaxed max-w-lg">
               {body}
             </p>
-            <div>
+            <div className="flex flex-wrap items-center gap-3">
               <Button
                 variant="hero"
                 size="xl"
                 className="h-12 px-7 text-base shadow-[0_14px_30px_-16px_rgba(79,70,229,0.95)]"
                 asChild
               >
-                <Link to="/interview-setup">
+                <Link to="/cv-review">
                   <Rocket className="mr-1.5 h-4 w-4" />
-                  {cta}
+                  {cvCta}
                   <ArrowRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="xl"
+                className="h-12 px-7 text-base bg-background/80"
+                asChild
+              >
+                <Link to="/interview-setup">
+                  <Video className="mr-1.5 h-4 w-4" />
+                  {interviewCta}
                 </Link>
               </Button>
             </div>

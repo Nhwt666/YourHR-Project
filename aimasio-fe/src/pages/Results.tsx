@@ -97,7 +97,7 @@ const Results = () => {
           </h2>
           <div className="flex flex-col sm:flex-row sm:items-center gap-6">
             <div className="flex items-center justify-center sm:justify-start min-w-[5rem]">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+              <div className="inline-flex items-center justify-center rounded-xl bg-primary/10 px-5 py-3 min-w-[5.5rem]">
                 <span className="text-2xl font-bold text-primary tabular-nums">{overallScore}/10</span>
               </div>
             </div>
@@ -112,7 +112,7 @@ const Results = () => {
                     <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden min-w-0">
                       <div
                         className="h-full bg-primary rounded-full transition-all"
-                        style={{ width: `${(s.score / 10) * 100}%` }}
+                        style={{ width: `${(s.score / 10) * 120}%` }}
                       />
                     </div>
                     <span className="text-xs font-medium text-foreground w-8 text-right tabular-nums">{s.score.toFixed(1)}</span>

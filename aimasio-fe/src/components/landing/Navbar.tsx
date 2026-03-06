@@ -71,14 +71,6 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const handlePrimaryNav = () => {
-    if (isAuthenticated) {
-      navigate("/dashboard");
-      return;
-    }
-    scrollToSection("overview");
-  };
-
   const handleAvatarClick = () => {
     navigate("/dashboard");
   };
@@ -91,16 +83,9 @@ const Navbar = () => {
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary text-xs font-bold">
               AI
             </span>
-            <span className="text-lg font-semibold tracking-tight text-foreground">YourHR</span>
+            <span className="text-lg font-semibold tracking-tight text-foreground">AI Interview Master</span>
           </Link>
           <div className="hidden md:flex items-center gap-1 rounded-full border border-border/70 bg-background/90 px-1 py-0.5 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.75)]">
-            <button
-              type="button"
-              onClick={handlePrimaryNav}
-              className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-background hover:text-foreground transition-colors"
-            >
-              {language === "en" ? "Features" : "Chức năng"}
-            </button>
             <button
               type="button"
               onClick={() => scrollToSection("benefits")}
@@ -236,16 +221,6 @@ const Navbar = () => {
       </div>
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-background px-4 py-4 space-y-3">
-          <button
-            type="button"
-            onClick={() => {
-              handlePrimaryNav();
-              setMobileOpen(false);
-            }}
-            className="block text-left w-full text-sm text-muted-foreground hover:text-foreground"
-          >
-            {language === "en" ? "Features" : "Chức năng"}
-          </button>
           <button
             type="button"
             onClick={() => {

@@ -37,7 +37,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
 
   if (getStoredToken()) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/" replace />;
   }
 
   const getReadableError = (error: unknown) => {
@@ -66,7 +66,7 @@ const Auth = () => {
       await registerUser(email, password);
       // Tự đăng nhập sau khi đăng ký thành công để vào thẳng trang web
       await loginUser(email, password);
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       setStatus(getReadableError(error));
     } finally {
@@ -82,7 +82,7 @@ const Auth = () => {
     try {
       setLoading(true);
       await loginUser(email, password);
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       setStatus(getReadableError(error));
     } finally {
@@ -106,7 +106,7 @@ const Auth = () => {
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
-                Chào mừng đến với YourHR AI
+                Chào mừng đến với AI Interview Master
               </h1>
               <p className="mt-3 text-sm md:text-base text-muted-foreground max-w-lg">
                 Đăng nhập để tiếp tục luyện phỏng vấn, kiểm tra CV và xem lại toàn bộ kết quả được lưu trước đó.
@@ -259,7 +259,7 @@ const Auth = () => {
 
               <p className="text-xs text-muted-foreground leading-relaxed min-h-[1.5rem]">{status}</p>
               <p className="text-[10px] text-muted-foreground/80">
-                Bằng việc tiếp tục, bạn đồng ý để YourHR AI lưu lại lịch sử luyện phỏng vấn và kết quả chấm điểm nhằm cải thiện trải nghiệm.
+                Bằng việc tiếp tục, bạn đồng ý để AI Interview Master lưu lại lịch sử luyện phỏng vấn và kết quả chấm điểm nhằm cải thiện trải nghiệm.
               </p>
             </div>
           </div>

@@ -37,7 +37,7 @@ const Dashboard = () => {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-2">
-                {language === "en" ? "Manage your YourHR AI account" : "Quản lý tài khoản YourHR AI"}
+                {language === "en" ? "Manage your AI Interview Master account" : "Quản lý tài khoản"}
               </span>
               <h1 className="text-heading">
                 {language === "en" ? "Account" : "Tài khoản"}
@@ -127,104 +127,11 @@ const Dashboard = () => {
                 </div>
               </form>
 
-              <div className="divide-y divide-border text-sm">
-                <div className="flex items-center justify-between py-3">
-                  <div>
-                    <p className="font-medium text-foreground">
-                      {language === "en" ? "Language & timezone" : "Ngôn ngữ & múi giờ"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {language === "en"
-                        ? "Vietnamese · GMT+7 (Asia/Ho_Chi_Minh)"
-                        : "Tiếng Việt · GMT+7 (Asia/Ho_Chi_Minh)"}
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
-                    {language === "en" ? "Configure" : "Thiết lập"}
-                  </Button>
-                </div>
-              </div>
+              {/* Đã ẩn block Ngôn ngữ & múi giờ theo yêu cầu */}
             </section>
           </div>
 
           <aside className="space-y-6">
-            <section className="rounded-2xl border border-border bg-background p-5 md:p-6">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                  {fullName.slice(0, 2).toUpperCase() || "NM"}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{fullName}</p>
-                  <p className="text-xs text-muted-foreground">{email}</p>
-                </div>
-              </div>
-              <div className="space-y-2 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">
-                    {language === "en" ? "Usage model" : "Hình thức sử dụng"}
-                  </span>
-                  <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
-                    {language === "en" ? "Pay per use" : "Mua theo lượt"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">
-                    {language === "en" ? "Billing status" : "Trạng thái thanh toán"}
-                  </span>
-                  <span className="text-foreground font-medium">
-                    {language === "en" ? "Active" : "Đang hoạt động"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">
-                    {language === "en" ? "Last sign‑in" : "Lần đăng nhập gần nhất"}
-                  </span>
-                  <span className="text-foreground font-medium">
-                    {language === "en" ? "Yesterday · 21:34" : "Hôm qua · 21:34"}
-                  </span>
-                </div>
-              </div>
-            </section>
-
-            <section className="rounded-2xl border border-border bg-background p-5 md:p-6 space-y-3 text-sm">
-              <div className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-primary" />
-                <h2 className="font-semibold text-foreground">
-                  {language === "en" ? "Billing" : "Thanh toán"}
-                </h2>
-              </div>
-              <div className="space-y-3 text-xs">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-foreground">
-                      {language === "en" ? "Saved payment method" : "Thẻ thanh toán đã lưu"}
-                    </p>
-                    <p className="text-muted-foreground">
-                      {language === "en" ? "Visa •••• 4242 · Expires 12/2026" : "Visa •••• 4242 · Hết hạn 12/2026"}
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
-                    {language === "en" ? "Change" : "Thay đổi"}
-                  </Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-foreground">
-                      {language === "en" ? "Billing history" : "Lịch sử thanh toán"}
-                    </p>
-                    <p className="text-muted-foreground">
-                      {language === "en"
-                        ? "3 most recent transactions in the last 90 days."
-                        : "3 giao dịch gần nhất trong 90 ngày."}
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
-                    {language === "en" ? "View details" : "Xem chi tiết"}
-                  </Button>
-                </div>
-              </div>
-            </section>
-
             <section className="rounded-2xl border border-border bg-background p-5 md:p-6 space-y-3 text-sm">
               <div className="flex items-center gap-2">
                 <Shield className="h-4 w-4 text-primary" />
@@ -239,22 +146,6 @@ const Dashboard = () => {
                   </span>
                   <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
                     {language === "en" ? "Configure" : "Thiết lập"}
-                  </Button>
-                </div>
-                <div className="flex items-center justify-between py-1.5">
-                  <span className="text-foreground">
-                    {language === "en" ? "Connected apps" : "Quản lý ứng dụng đã kết nối"}
-                  </span>
-                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
-                    {language === "en" ? "0 apps" : "0 ứng dụng"}
-                  </Button>
-                </div>
-                <div className="flex items-center justify-between py-1.5">
-                  <span className="text-foreground">
-                    {language === "en" ? "Notification settings" : "Quản lý thông báo"}
-                  </span>
-                  <Button variant="outline" size="sm" className="h-8 px-3 text-xs">
-                    {language === "en" ? "Email & browser" : "Email & trình duyệt"}
                   </Button>
                 </div>
                 <div className="flex items-center justify-between pt-3 mt-1 border-t border-border/80">
@@ -272,13 +163,13 @@ const Dashboard = () => {
             <section className="rounded-2xl border border-dashed border-border bg-background/60 p-5 md:p-6 text-xs text-muted-foreground">
               <div className="flex items-center justify-between mb-2">
                 <div className="font-semibold text-foreground text-sm">
-                  {language === "en" ? "Data & access" : "Dữ liệu & quyền truy cập"}
+                  {language === "en" ? "Data commitment" : "Cam kết dữ liệu người dùng"}
                 </div>
               </div>
               <p>
                 {language === "en"
-                  ? "You can request an export of your interview data or full account deletion according to data protection rules. This feature will be added in upcoming releases."
-                  : "Bạn có thể yêu cầu trích xuất dữ liệu buổi phỏng vấn hoặc xoá hoàn toàn tài khoản theo quy định bảo vệ dữ liệu cá nhân. Tính năng này sẽ được bổ sung trong các bản cập nhật tiếp theo."}
+                  ? "AI Interview Master only uses your data to run CV reviews and practice interviews. Interview content, CV files and scores are stored securely and are never sold or shared with third parties."
+                  : "AI Interview Master chỉ sử dụng dữ liệu để phục vụ việc đánh giá CV và buổi phỏng vấn thử. Nội dung phỏng vấn, file CV và điểm số được lưu trữ an toàn, không bán và không chia sẻ cho bên thứ ba."}
               </p>
             </section>
           </aside>

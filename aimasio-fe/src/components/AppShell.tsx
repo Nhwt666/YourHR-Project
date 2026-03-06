@@ -46,7 +46,7 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
             AI
           </span>
           <span className="text-[18px] font-semibold tracking-tight text-foreground">
-            YourHR&nbsp;<span className="text-primary">AI</span>
+            AI Interview&nbsp;<span className="text-primary">Master</span>
           </span>
         </Link>
         <nav className="space-y-1 text-sm">
@@ -65,7 +65,7 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
                         ? "Results"
                         : "History"
                 : item.key === "dashboard"
-                  ? "Tổng quan"
+                  ? "Hồ sơ"
                   : item.key === "cv"
                     ? "Đánh giá CV"
                     : item.key === "interview-setup"
@@ -102,7 +102,7 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
                 AI
               </span>
               <span className="text-sm font-semibold tracking-tight text-foreground">
-                YourHR AI
+                AI Interview Master
               </span>
             </Link>
             <div className="flex items-center gap-2">
@@ -189,7 +189,7 @@ const AppShell = ({ children }: { children: React.ReactNode }) => {
                           ? "Results"
                           : "History"
                   : item.key === "dashboard"
-                    ? "Tổng quan"
+                    ? "Hồ sơ"
                     : item.key === "cv"
                       ? "Đánh giá CV"
                       : item.key === "interview-setup"

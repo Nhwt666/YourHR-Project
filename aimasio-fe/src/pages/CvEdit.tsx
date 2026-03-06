@@ -52,7 +52,7 @@ const CvEdit = () => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = language === "en" ? "YourHR-CV-edited.txt" : "YourHR-CV-da-chinh-sua.txt";
+      a.download = language === "en" ? "AIInterviewMaster-CV-edited.txt" : "AIInterviewMaster-CV-da-chinh-sua.txt";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -66,8 +66,8 @@ const CvEdit = () => {
     language === "en" ? "Edit CV with AI guidance" : "Chỉnh sửa CV với gợi ý từ AI";
   const headerSubtitle =
     language === "en"
-      ? "YourHR AI highlights changes and suggests how you can polish the CV after a review."
-      : "YourHR AI gợi ý chỉnh sửa và giúp bạn hoàn thiện CV sau bước đánh giá.";
+      ? "AI Interview Master highlights changes and suggests how you can polish the CV after a review."
+      : "AI Interview Master gợi ý chỉnh sửa và giúp bạn hoàn thiện CV sau bước đánh giá.";
 
   return (
     <AppShell>

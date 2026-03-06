@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const roleOptions = [
   "Front End - FPT Software",
@@ -108,8 +109,8 @@ const InterviewSetup = () => {
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           {language === "en"
-            ? "Choose a role and YourHR AI will automatically generate the question set for this paid interview."
-            : "Chọn vai trò, sau đó YourHR AI sẽ tạo bộ câu hỏi tự động cho từng lượt phỏng vấn đã thanh toán."}
+            ? "Choose a role and AI Interview Master will automatically generate the question set for this paid interview."
+            : "Chọn vai trò, sau đó AI Interview Master sẽ tạo bộ câu hỏi tự động cho từng lượt phỏng vấn đã thanh toán."}
         </p>
       </div>
 
@@ -168,27 +169,77 @@ const InterviewSetup = () => {
                 : "Kết hợp các kiểu phỏng vấn khác nhau cho phiên này. Một buổi phỏng vấn hoàn chỉnh thường gồm câu hỏi kỹ thuật, hành vi và sàng lọc nhanh."}
             </p>
             <div className="mt-3 space-y-2 text-sm">
-              <label className="flex items-center gap-2">
-                <Checkbox
-                  checked={styleTech}
-                  onCheckedChange={(v) => setStyleTech(Boolean(v))}
-                />
-                <span>{language === "en" ? "Technical interview" : "Phỏng vấn kỹ thuật"}</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <Checkbox
-                  checked={styleBehavior}
-                  onCheckedChange={(v) => setStyleBehavior(Boolean(v))}
-                />
-                <span>{language === "en" ? "Behavioural interview" : "Phỏng vấn hành vi"}</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <Checkbox
-                  checked={styleScreening}
-                  onCheckedChange={(v) => setStyleScreening(Boolean(v))}
-                />
-                <span>{language === "en" ? "Screening interview" : "Phỏng vấn sàng lọc"}</span>
-              </label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <label className="flex items-center gap-2 cursor-help">
+                    <Checkbox
+                      checked={styleTech}
+                      onCheckedChange={(v) => setStyleTech(Boolean(v))}
+                    />
+                    <span>
+                      {language === "en" ? "Technical interview" : "Phỏng vấn kỹ thuật"}
+                    </span>
+                  </label>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="bottom"
+                  align="start"
+                  sideOffset={4}
+                  className="max-w-[260px] text-xs leading-relaxed"
+                >
+                  {language === "en"
+                    ? "Evaluate technical knowledge and problem-solving through technical questions or a coding task."
+                    : "Đánh giá kiến thức chuyên môn và khả năng giải quyết vấn đề thông qua câu hỏi kỹ thuật hoặc bài code."}
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <label className="flex items-center gap-2 cursor-help">
+                    <Checkbox
+                      checked={styleBehavior}
+                      onCheckedChange={(v) => setStyleBehavior(Boolean(v))}
+                    />
+                    <span>
+                      {language === "en" ? "Behavioural interview" : "Phỏng vấn hành vi"}
+                    </span>
+                  </label>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="bottom"
+                  align="start"
+                  sideOffset={4}
+                  className="max-w-[260px] text-xs leading-relaxed"
+                >
+                  {language === "en"
+                    ? "Focus on how you handle situations, teamwork, communication and real work experience."
+                    : "Tập trung vào cách bạn xử lý tình huống, làm việc nhóm, giao tiếp và kinh nghiệm thực tế trong công việc."}
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <label className="flex items-center gap-2 cursor-help">
+                    <Checkbox
+                      checked={styleScreening}
+                      onCheckedChange={(v) => setStyleScreening(Boolean(v))}
+                    />
+                    <span>
+                      {language === "en" ? "Screening interview" : "Phỏng vấn sàng lọc"}
+                    </span>
+                  </label>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="bottom"
+                  align="start"
+                  sideOffset={4}
+                  className="max-w-[260px] text-xs leading-relaxed"
+                >
+                  {language === "en"
+                    ? "Quick questions to assess basic fit before moving to deeper rounds."
+                    : "Các câu hỏi ngắn để đánh giá nhanh mức độ phù hợp trước khi vào các vòng phỏng vấn sâu hơn."}
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
 
